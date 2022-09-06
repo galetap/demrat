@@ -6,10 +6,121 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+demrat
+=======
 
-This is an R Markdown document that generates a github readme.md file.
+Provides a framework for estimating demographic rates (growth, crude birth, and total fertility rate) of a population represented by a cemetery sample using age-at-death ratios. 
+
+The methodology accounts for the effect of stochastic variation in small skeletal samples.
+
+
+Installation and loading
+------------------------
+
+-   Install the latest developmental version from
+    [GitHub](https://github.com/galetap/demrat) as follow:
+
+```{r installation, eval = FALSE}
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("galetap/demrat")
+```
+
+-   Loading package
+
+```{r loading_package}
+library(demrat)  
+```
+
+
+Data
+------------------------
+
+The package contains two model datasets `BA` and `BAraw`.
+Both datasets are adopted from Bocquet-Appel (2002), Table 1 (https://doi.org/10.1086/342429). 
+
+
+**BA**
+
+Summary data for 68 European Mesolithic and Neolithic sites.
+Each row contains information about a single site.
+
+```{r Dataset_BA}
+BA
+# For column description, run help(BA).
+```
+
+
+**BAraw**
+
+Estimation of age-at-death for 5,115 skeletons from 68 archaeological sites presented in `BA`).
+
+
+```{r Dataset_BAraw}
+BAraw
+# For column description, run help(BAraw).
+```
+
+
+Key functions
+-------------
+
+#### `dr`: Calculate summary information from raw age-at-death data
+
+Calculate number of skeletons in several age-at-death groups (e.g., D1+, D20+) and six demographic ratios (D1+/D20+, D3+/D20+, D5+/D20+, D5-14/D20+ aka juvenility index, D5-19/D5+ aka P index, and D0-14/D0+) by Site and Culture.
+
+```{r dr}
+dr(BAraw)
+```
+
+
+#### `diest`: Estimation of demographoc rates for cemetery sample(s)
+
+`diest` function estimates growth, crude birth, and total fertility rates based on age-at-death ratios (e.g., D5+/D20+) by Site and Culture. 
+
+By default, the prediction model is based on the reference set of 100 simulated reference skeletal samples with the same number of adult skeletons (D20+) as the real skeletal sample under study. 
+
+Estimation for sites with a large number of skeletons and/or estimation for many sites can be slow. 
+
+```{r diest}
+# Estimation from raw age-at-death data
+BAraw %>%
+  dr() %>% 
+  slice(12, 24) %>%
+  diest()
+
+# Estimation from summary data 
+BA %>%
+  slice(12, 24) %>%
+  diest()
+```
+
+A mortality regime of a population from which reference skeletal samples are drawn can be set by the user (run `help(diest)`).
+
+
+```{r diest_set}
+BA %>%
+  slice(12) %>%
+  diest(samples = 200, e0_min = 25, e0_max = 30)
+```
+
+
+#### `simdr`: Create a reference set of simulated skeletal samples
+
+`simdr_CD` is a helper function that creates a reference set of skeletal samples drawn from Coale and Demeny (1983) set of model life tables. For parameters description, run `help(simdr_CD)`.
+
+
+```{r simdr_CD}
+# Simulation based on the default settings 
+simdr_CD() %>% 
+  as_tibble()
+
+# Simulation based on the user-defined settings
+simdr_CD(samples = 200, D20_raw = 20, e0_min = 30, e0_max = 40) %>% 
+  as_tibble()
+```
+
 
 ```{r}
-summary(iris)
+
+
 ```
