@@ -10,8 +10,8 @@ simdr_CD(
   D20_raw = 50,
   e0_min = 20,
   e0_max = 30,
-  growth_min = -4,
-  growth_max = 8,
+  growth_min = -3,
+  growth_max = 3,
   ...
 )
 }

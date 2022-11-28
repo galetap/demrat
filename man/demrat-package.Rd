@@ -4,7 +4,7 @@
 \name{demrat-package}
 \alias{demrat}
 \alias{demrat-package}
-\title{demrat: Estimate Fertility And Growth Rates For Skeletal Samples}
+\title{demrat: Estimation Of Fertility And Growth Rates For Skeletal Samples}
 \description{
 Package allows to predict growth rate, crude birth rate and total fertility rate for skeletal samples using age-at-death ratios computer from number of skeletons in two age-at-death categories. Prediction is based on regression model that is derived from a unique set of reference skeletal samples of the same size as the cemetery sample under study.
 }

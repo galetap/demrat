@@ -76,6 +76,10 @@ Results of demographic estimation.
 based on age-at-death ratio (see \code{IV}).
 \item \strong{\code{Lwr}}: Lower limit of the prediction interval.
 \item \strong{\code{Upr}}: Upper limit of the prediction interval.
+\item \strong{\code{Ratio_lim}}: 97.5 percentile of the age-at-death ratio
+computed in the set of simulated reference skeletal samples.
+\item \strong{\code{Ratio_eval}}: \code{Out of limits} if the age-at-death ratio observed in the real skeletal sample is higher than the Ratio_lim.
+In this case, the ratio may be biased and estimation may be unreliable.
 }
 }
 \description{
@@ -86,13 +90,14 @@ Function can be applied to several cemetery samples at once.
 \examples{
 # Demographic estimation based on the original Bocquet-Appel (2002, Table 1) data
 BA \%>\%
-slice(12, 24) \%>\%
+slice(5, 12) \%>\%
 diest()
 
 # Adding extra variables
 BA \%>\%
-slice(12, 24) \%>\%
-diest(extra_var = c(Front, C14, dt))
+slice(5, 12) \%>\%
+diest(extra_var = c(Front, C14, dt),
+growth_min = -3, growth_max = 3)
 
 # Demographic estimation based on the reconstructed Bocquet-Appel (2002) raw data
 BAraw \%>\%

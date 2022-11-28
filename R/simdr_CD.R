@@ -62,10 +62,10 @@
 #' @export
 
 
-# Life table simulation & skeletal samples creation / Coale and Denemy ---------------------
+# Life table simulation & skeletal samples creation / Coale and Demeny ---------------------
 simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
                      e0_min = 20, e0_max = 30,
-                     growth_min = -4.0, growth_max = 8.0, ...) {
+                     growth_min = -3.0, growth_max = 3.0, ...) {
 
   # load("W_coef_Est.rdata")
   set.seed(123456789)

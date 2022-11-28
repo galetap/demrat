@@ -157,18 +157,46 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
       else
         tidyr::unnest(., Pred)
     } %>%
+
+    # Add estimation based on Bocquet-Appel 2002 regression formula (not computed here)
     {if("P" %in% names(site))
-      # Add estimation based on Bocquet-Appel 2002 regression formula (not computed here)
       dplyr::bind_rows(., list(DV="CBR", IV="P",
+                               Ref=list(ref), Data_pred = list(site),
                                Est=1000*as.double(0.00375 + 0.15334*(site$P^0.89074)))) %>%
         dplyr::bind_rows(list(DV="Growth", IV="P",
+                               Ref=list(ref), Data_pred = list(site),
                               Est=100*as.double(-0.05389 + 0.12555*(site$P^0.47788))))
       else  .
     } %>%
+
+    # Compute 97.5% limit of the ratios in the reference samples
+    dplyr::mutate(Ratio_lim = purrr::map(.x = Ref,
+                                         .f = ~ .x %>%
+                                           dplyr::select(D1_D20_, D3_D20_, D5_D20_, P) %>%
+                                           dplyr::summarise(across(.cols = everything(),
+                                                                   .fns = ~quantile(., probs=0.975))) %>%
+                                           tidyr::pivot_longer(cols = everything(),
+                                                        names_to = "Ratio", values_to = "U_lim"))) %>%
+    # Filter the limit for IV used in the particular row only
+    dplyr::mutate(Ratio_lim = purrr::map2_dbl(.x = Ratio_lim, .y = IV,
+                                .f = ~ .x %>%
+                                  dplyr::filter(Ratio==.y) %>%
+                                  dplyr::select(U_lim) %>%
+                                  dplyr::pull())) %>%
+
+    # Is the ratio higher than its 97.5% limit of the set of reference samples?
+    dplyr::mutate(Ratio_eval =
+                    purrr::pmap_chr(list(IV, Data_pred, Ratio_lim),
+                                    function(IV, Data_pred, Ratio_lim)
+                                    {ifelse(Data_pred %>%
+                                              dplyr::select(all_of(IV)) %>%
+                                              dplyr::pull() >
+                                              Ratio_lim,
+                                            "Out of limits", "Normal")})) %>%
 
     # Round results (avoid scientific format)
     dplyr::mutate(dplyr::across(Est:Upr, ~round(.x, 4))) %>%
     add_column(extra_var_sel, .before = 1)
 
+    invisible(res)
 }
-
