@@ -1,8 +1,9 @@
-#' Original Bocquet-Appel's (2002, Table 1) dataset
+#' Bocquet-Appel's (2002, Table 1) dataset in the summary data format
 #'
 #' Bocquet-Appel J-P (2002). Paleoanthropological traces of a Neolithic demographic transition. Current Anthropology 43: 637-650.
 #' Summary of distribution of deaths in 68 Mesolithic and Neolithic European cemetery samples.
 #' Three new variables were added to the dataset (D5_, D5_D20_, and Culture).
+#' The dataset is in the summary data format, each row represents one skeletal sample.
 
 #'
 #' @format A tibble with 68 rows and 12 variables:
@@ -23,12 +24,14 @@
 "BA"
 
 
-#' Raw Bocquet-Appel's (2002) dataset
+#' Bocquet-Appel's (2002) dataset in the raw data format
 #'
-#' Dataset containing age-at-death data for ca. 5,000 European Mesolithic and Neolithic skeletons from 68 sites.
-#' Data were reconstructed based on Bocquet-Appel's summary Table 1 published in
+#' Dataset containing age-at-death estimation for 5,115 skeletons from 68 European Mesolithic and Neolithicsites.
+#' Data were rebuilt from the Bocquet-Appel's summary Table 1 published in
 #' Bocquet-Appel J-P (2002). Paleoanthropological traces of a Neolithic demographic transition. Current Anthropology 43: 637-650.
-#' Note that the dataset does not represent the original Bocquet-Appel's raw data that are not available to us.
+#' Note that the data is a reasonable approximation of the original raw data collected by Bocquet-Appel,
+#' which were not available to us.
+#' The dataset is in the raw data format, each row represents one skeleton.
 
 #'
 #' @format A tibble with 5,115 rows and 4 variables:

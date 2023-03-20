@@ -3,7 +3,7 @@
 \docType{data}
 \name{BA}
 \alias{BA}
-\title{Original Bocquet-Appel's (2002, Table 1) dataset}
+\title{Bocquet-Appel's (2002, Table 1) dataset in the summary data format}
 \format{
 A tibble with 68 rows and 12 variables:
 \describe{
@@ -28,5 +28,6 @@ BA
 Bocquet-Appel J-P (2002). Paleoanthropological traces of a Neolithic demographic transition. Current Anthropology 43: 637-650.
 Summary of distribution of deaths in 68 Mesolithic and Neolithic European cemetery samples.
 Three new variables were added to the dataset (D5_, D5_D20_, and Culture).
+The dataset is in the summary data format, each row represents one skeletal sample.
 }
 \keyword{datasets}

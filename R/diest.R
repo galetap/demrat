@@ -1,12 +1,12 @@
-#' Estimates growth and fertility rate for cemetery samples
+#' Estimates growth and fertility rate for skeletal samples
 #'
 #' Estimates growth, crude birth and total fertility rates based on age-at-death ratios
 #' (e.g., D5+/D20+) summarising distribution of deaths in a cemetery sample.
 #' Function can be applied to several cemetery samples at once.
-#' @param dr_data A data frame, each row contains data for a single cemetery sample.
-#' Data frame must have two columns at minimum:
-#' \code{D20_} (i.e., D20+, number of adult skeletons in a sample)
-#' and at least one of the following three columns: \code{D1_D20_, D3_D20_, D5_D20_}
+#' @param dr_data A data frame with one row containing data for a single cemetery sample.
+#' Data frame must have four columns at minimum:
+#' \code{Site}, \code{Culture}, \code{D20_} (i.e., D20+, number of adult skeletons in a sample)
+#' and at least one out of the following three columns: \code{D1_D20_, D3_D20_, D5_D20_}
 #' (i.e., D1+/D20+, D3+/D20+, D5+/D20+ age-at-death ratios, respectively).
 #' @param summary If \code{TRUE}, functions returns only estimations.
 #' If \code{FALSE}, function returns full results including model characteristics, reference data, etc.
@@ -19,9 +19,11 @@
 #' @param e0_max Maximum value of life expectancy at birth in population from which skeletal samples are drawn.
 #' @param growth_min Minimum value of annual growth rate in population from which skeletal samples are drawn.
 #' @param growth_max Maximum value of annual growth rate in population from which skeletal samples are drawn.
+#' @param IV Independent variable (the age-at-death ratio) used in the prediction. One or more items from \code{c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P")}.
+#' @param DV Dependent (demographic) variable to be estimated. One or more items from \code{c("All", "Growth", "TFR", "CBR")}.
 #' @param extra_var Extra variables to be joined to results (e.g. description, absolute chronology of the site).
 #' Extra variables must be in \code{dr_data} data frame.
-#' @param ... Other parameters (see \code{simdr_CD} and \code{diest_fun})
+#' @param ... Other parameters (see \code{simdr_CD} and \code{diest_fn})
 
 #' @return Data frame containing estimation of demographic indicators of population
 #' from which a cemetery sample was drawn.
@@ -58,18 +60,22 @@
 #' slice(5, 12) %>%
 #' diest()
 #'
-#' # Adding extra variables
-#' BA %>%
-#' slice(5, 12) %>%
-#' diest(extra_var = c(Front, C14, dt),
-#' growth_min = -3, growth_max = 3)
-#'
 #' # Demographic estimation based on the reconstructed Bocquet-Appel (2002) raw data
 #' BAraw %>%
 #' dr() %>%
 #' slice(1:2) %>%
 #' diest()
 #'
+#' # Select predicted demographic variables and predictors that are showed in the results
+#' BA %>%
+#' slice(12) %>%
+#' diest(summary = T, IV=c("D5_D20_"), DV=c("Growth", "TFR"))
+#'
+#' # Adding extra variables
+#' BA %>%
+#' slice(5, 12) %>%
+#' diest(extra_var = c(Front, C14, dt),
+#' growth_min = -2, growth_max = 2)
 #' @export
 
 
@@ -79,11 +85,19 @@
 diest <- function(dr_data, summary=T, pred_level=0.95,
                   sss=T, samples = 100,
                   e0_min = 20, e0_max = 30,
-                  growth_min = -4.0, growth_max = 8.0,
+                  growth_min = -3.0, growth_max = 3.0,
+                  IV = c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P"),
+                  DV = c("All", "Growth", "TFR", "CBR"),
                   extra_var, ...){
+
+  # Match input parameters
+  IV <- match.arg(IV, several.ok = T)
+  DV <- match.arg(DV, several.ok = T)
+
   # Argument glanced must be F to let function work
-  if(sum(c("Site", "Culture") %in% names(dr_data))!=2)
-    message("Input data frame with demographic ratios must contain columns Site and Culture")
+  if(sum(c("Site", "Culture", "D20_") %in% names(dr_data))!=3 |
+     sum(c("D1_D20_", "D3_D20_", "D5_D20_") %in% names(dr_data))==0)
+    message("Input data frame must contain columns Site, Culture, D20_ and at least one out of the following three columns: D1_D20_, D3_D20_, D5_D20_ (see help(diest)).")
   else {
     dr_data %>%
       tidyr::nest(dr_data=-c(Site, Culture)) %>%
@@ -101,9 +115,21 @@ diest <- function(dr_data, summary=T, pred_level=0.95,
       {if(summary)
         tidyr::unnest(., DIest) %>%
           tidyr::unnest(Glance, keep_empty = TRUE) %>%
-          dplyr::select(Site, Culture, {{extra_var}}, DV, IV, Est, Lwr, Upr, Ratio_eval)
+          dplyr::select(Site, Culture, {{extra_var}}, DV, IV, Est, Lwr, Upr, Ratio_eval) %>%
+          # Filter only selected DV/demographoc indicators
+          {if("All" %in% {{DV}})
+            .
+            else
+              dplyr::filter(., DV %in% {{DV}})
+          } %>%
+          # Filter only selected IV/predictors
+          {if("All" %in% {{IV}})
+            .
+            else
+              dplyr::filter(., IV %in% {{IV}})
+          }
         else .
       }
+
   }
 }
-

@@ -3,22 +3,23 @@
 
 Provides a framework for estimating demographic rates (growth, crude
 birth, and total fertility rate) of a population represented by a
-cemetery sample using age-at-death ratios.
+skeletal sample(s) using age-at-death ratios.
 
 The methodology accounts for the effect of stochastic variation in small
-skeletal samples.
+skeletal samples and allows to set a reference mortality pattern
+appropriate for the time period being studied.
 
 ## Installation and loading
 
--   Install the latest developmental version from
-    [GitHub](https://github.com/galetap/demrat) as follow:
+- Install the latest developmental version from
+  [GitHub](https://github.com/galetap/demrat) as follow:
 
 ``` r
 if(!require(devtools)) install.packages("devtools")
 devtools::install_github("galetap/demrat")
 ```
 
--   Loading package
+- Loading package
 
 ``` r
 library(demrat)  
@@ -26,21 +27,59 @@ library(demrat)
 
 ## Data
 
-The package contains two model datasets `BA` and `BAraw`. Both datasets
-are adopted from Bocquet-Appel (2002), Table 1
-(<https://doi.org/10.1086/342429>).
+The functions of the package accept data in two formats; summary data
+and raw data format.
 
-**BA**
+Two built-in datasets are available: `BA` (summary data format) and
+`BAraw` (raw data format). Both datasets are adopted from Bocquet-Appel
+(2002), Table 1 (<https://doi.org/10.1086/342429>).
 
-Summary data for 68 European Mesolithic and Neolithic sites. Each row
-contains information about a single site.
+**Summary data format**
+
+The rows of the summary data format contain data for one skeletal
+sample. Data must have at least four variables.
+
+1.  Site
+2.  Culture
+3.  D20\_ (i.e., D20+, number of adult skeletons in a sample)
+4.  One out of the following three age-at-death ratios: D1_D20\_,
+    D3_D20\_, D5_D20\_ (i.e., D1+/D20+, D3+/D20+, D5+/D20+ ratios,
+    respectively).
+
+The column with the total number of skeletons in a sample (named n) is
+recommended.
+
+``` r
+tibble(Site = c("Site A", "Site B", "Site C"),
+       Culture = c("Culture 1", "Culture 1", "Culture 2"),
+       D20_ = c(25, 96, 55),
+       D5_D20_ = c(1.61, 1.37, 1.27),
+       n = c(50, 141, 72))
+```
+
+    ## # A tibble: 3 × 5
+    ##   Site   Culture    D20_ D5_D20_     n
+    ##   <chr>  <chr>     <dbl>   <dbl> <dbl>
+    ## 1 Site A Culture 1    25    1.61    50
+    ## 2 Site B Culture 1    96    1.37   141
+    ## 3 Site C Culture 2    55    1.27    72
+
+*`BA` dataset*
+
+Summary format of Bocquet-Appel’s (2002) dataset.
+
+Each row contains data from a single skeletal sample.
+
+Variables include Site and Culture name, absolute chronology of the
+Site, number of skeletons in various age-at-death categories, and
+age-at-death ratio values.
 
 ``` r
 BA
 ```
 
     ## # A tibble: 68 × 12
-    ##    Site         Front   C14    dt  D0_4 D5_19   D20_ Total D5_19…¹   D5_ D5_D20_
+    ##    Site         Front   C14    dt  D0_4 D5_19   D20_     n D5_19…¹   D5_ D5_D20_
     ##    <chr>        <int> <int> <int> <dbl> <dbl>  <dbl> <dbl>   <dbl> <dbl>   <dbl>
     ##  1 Aisne series  5000  4900   100 10    15     25       50   0.375  40      1.6 
     ##  2 Aiterhofen …  5400  5300   100  5.4  21.4  115.     142   0.157 137.     1.19
@@ -59,10 +98,45 @@ BA
 # For column description, run help(BA).
 ```
 
-**BAraw**
+**Raw data format**
 
-Estimation of age-at-death for 5,115 skeletons from 68 archaeological
-sites presented in `BA`).
+The rows of the raw data format contain data for one skeleton. Data must
+contain at least four variables.
+
+1.  Site
+2.  Culture
+3.  Age_min; lower limit of the age-at-death estimate of a skeleton
+4.  Age_max; upper limit of the age-at-death estimate of a skeleton
+
+Note that the age-at.death intervals are closed on the left and open on
+the right. It is, interval from 20 to 40 means that individual died
+between 20 and 39.9 years of age.
+
+``` r
+# First 10 rows only
+tibble(Site = rep("Site A", 10),
+       Culture = rep("Culture 1", 10),
+       Age_min = c(20, 0, 40, 3, 9, 20, 1, 20, 19, 60),
+       Age_max = c(40, 1, 60, 5, 12, 39, 2, 100, 21, 100))
+```
+
+    ## # A tibble: 10 × 4
+    ##    Site   Culture   Age_min Age_max
+    ##    <chr>  <chr>       <dbl>   <dbl>
+    ##  1 Site A Culture 1      20      40
+    ##  2 Site A Culture 1       0       1
+    ##  3 Site A Culture 1      40      60
+    ##  4 Site A Culture 1       3       5
+    ##  5 Site A Culture 1       9      12
+    ##  6 Site A Culture 1      20      39
+    ##  7 Site A Culture 1       1       2
+    ##  8 Site A Culture 1      20     100
+    ##  9 Site A Culture 1      19      21
+    ## 10 Site A Culture 1      60     100
+
+*`BAraw` dataset*
+
+Raw format of Bocquet-Appel’s (2002) dataset.
 
 ``` r
 BAraw
@@ -89,12 +163,17 @@ BAraw
 
 ## Key functions
 
-#### `dr`: Calculate summary information from raw age-at-death data
+#### `dr`: Translate raw to summary data format
 
-Calculate number of skeletons in several age-at-death groups (e.g., D1+,
-D20+) and six demographic ratios (D1+/D20+, D3+/D20+, D5+/D20+,
-D5-14/D20+ aka juvenility index, D5-19/D5+ aka P index, and D0-14/D0+)
-by Site and Culture.
+Based on the raw data format, the function calculates
+
+- number of skeletons in several age-at-death groups (e.g., D1+, D20+)
+  and
+- six demographic ratios (D1+/D20+, D3+/D20+, D5+/D20+, D5-14/D20+ aka
+  juvenility index, D5-19/D5+ aka P index, and D0-14/D0+) by Site and
+  Culture.
+
+The function can be applied for one or more Sites.
 
 ``` r
 dr(BAraw)
@@ -116,64 +195,57 @@ dr(BAraw)
     ## # … with 58 more rows, and 6 more variables: D1_D20_ <dbl>, D3_D20_ <dbl>,
     ## #   D5_D20_ <dbl>, JI <dbl>, P <dbl>, D0_14_D0_ <dbl>
 
-#### `diest`: Estimation of demographoc rates for cemetery sample(s)
+#### `diest`: Estimates demographic rates for skeletal sample(s)
 
 `diest` function estimates growth, crude birth, and total fertility
 rates based on age-at-death ratios (e.g., D5+/D20+) by Site and Culture.
+The function accepts data in the summary format.
 
-By default, the prediction model is based on the reference set of 100
-simulated reference skeletal samples with the same number of adult
-skeletons (D20+) as the real skeletal sample under study.
+The function can be applied for one or more Sites.
 
 Estimation for sites with a large number of skeletons and/or estimation
 for many sites can be slow.
 
-``` r
-# Estimation from raw age-at-death data
-BAraw %>%
-  dr() %>% 
-  slice(12, 24) %>%
-  diest()
-```
+**`diest` with default settings based on summary data format**
 
-    ## # A tibble: 22 × 7
-    ##    Site         Culture   DV     IV         Est    Lwr   Upr
-    ##    <chr>        <fct>     <chr>  <chr>    <dbl>  <dbl> <dbl>
-    ##  1 Cala Colombo Neolithic TFR    D5_D20_  7.65   3.72  15.7 
-    ##  2 Cala Colombo Neolithic TFR    D3_D20_  8.33   4.34  16.0 
-    ##  3 Cala Colombo Neolithic TFR    D1_D20_  5.67   3.48   9.24
-    ##  4 Cala Colombo Neolithic CBR    D5_D20_ 61.8   28.0   95.6 
-    ##  5 Cala Colombo Neolithic CBR    D3_D20_ 64.5   33.3   95.6 
-    ##  6 Cala Colombo Neolithic CBR    D1_D20_ 47.1   23.5   70.7 
-    ##  7 Cala Colombo Neolithic Growth D5_D20_  1.50  -1.10   4.10
-    ##  8 Cala Colombo Neolithic Growth D3_D20_  1.72  -0.638  4.08
-    ##  9 Cala Colombo Neolithic Growth D1_D20_  0.403 -1.45   2.25
-    ## 10 Cala Colombo Neolithic CBR    P       56.2   NA     NA   
-    ## # … with 12 more rows
+By default, the prediction model is based on the reference set of 100
+simulated reference skeletal samples
+
+- that have the same number of adult skeletons (D20+) as the real
+  skeletal sample under study
+- that are drawn from reference populations with life expectancies
+  between 18 and 25 years and subjected to an annual growth between −3
+  and 3% per annum.
 
 ``` r
-# Estimation from summary data 
 BA %>%
+  # Subset two sites only
   slice(12, 24) %>%
+  # Predict demographic rates
   diest()
 ```
 
-    ## # A tibble: 10 × 7
-    ##    Site         Culture    DV     IV          Est    Lwr    Upr
-    ##    <chr>        <chr>      <chr>  <chr>     <dbl>  <dbl>  <dbl>
-    ##  1 Cala Colombo Neolithic  TFR    D5_D20_  8.07    3.93  16.6  
-    ##  2 Cala Colombo Neolithic  CBR    D5_D20_ 64.1    30.3   97.9  
-    ##  3 Cala Colombo Neolithic  Growth D5_D20_  1.68   -0.917  4.28 
-    ##  4 Cala Colombo Neolithic  CBR    P       58.2    NA     NA    
-    ##  5 Cala Colombo Neolithic  Growth P        1.81   NA     NA    
-    ##  6 Djerdap      Mesolithic TFR    D5_D20_  4.50    3.38   6.01 
-    ##  7 Djerdap      Mesolithic CBR    D5_D20_ 35.4    18.3   52.5  
-    ##  8 Djerdap      Mesolithic Growth D5_D20_ -0.310  -1.36   0.740
-    ##  9 Djerdap      Mesolithic CBR    P       34.4    NA     NA    
-    ## 10 Djerdap      Mesolithic Growth P       -0.0944 NA     NA
+    ## # A tibble: 10 × 8
+    ##    Site         Culture    DV     IV            Est       Lwr       Upr Ratio_…¹
+    ##    <chr>        <chr>      <chr>  <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>   
+    ##  1 Cala Colombo Neolithic  TFR    D5_D20_    7.11        3.48    14.5   Normal  
+    ##  2 Cala Colombo Neolithic  CBR    D5_D20_   55.8        27.0     84.6   Normal  
+    ##  3 Cala Colombo Neolithic  Growth D5_D20_    1.14       -1.47     3.75  Normal  
+    ##  4 Cala Colombo Neolithic  CBR    P         58.2        NA       NA     Normal  
+    ##  5 Cala Colombo Neolithic  Growth P          1.81       NA       NA     Normal  
+    ##  6 Djerdap      Mesolithic TFR    D5_D20_    4.56        3.41     6.09  Normal  
+    ##  7 Djerdap      Mesolithic CBR    D5_D20_   36.3        24.7     47.9   Normal  
+    ##  8 Djerdap      Mesolithic Growth D5_D20_   -0.597      -1.68     0.482 Normal  
+    ##  9 Djerdap      Mesolithic CBR    P         34.4        NA       NA     Normal  
+    ## 10 Djerdap      Mesolithic Growth P         -0.0944     NA       NA     Normal  
+    ## # … with abbreviated variable name ¹​Ratio_eval
 
-A mortality regime of a population from which reference skeletal samples
-are drawn can be set by the user (run `help(diest)`).
+**`diest` with user defined settings of demographic regime of reference
+populations**
+
+A demographoc regime (mortality level and annual growth) of a population
+from which reference skeletal samples are drawn can be set by the user
+(run `help(diest)`).
 
 ``` r
 BA %>%
@@ -181,20 +253,145 @@ BA %>%
   diest(samples = 200, e0_min = 25, e0_max = 30)
 ```
 
-    ## # A tibble: 5 × 7
-    ##   Site         Culture   DV     IV        Est    Lwr   Upr
-    ##   <chr>        <chr>     <chr>  <chr>   <dbl>  <dbl> <dbl>
-    ## 1 Cala Colombo Neolithic TFR    D5_D20_  8.42  3.77  18.8 
-    ## 2 Cala Colombo Neolithic CBR    D5_D20_ 63.4  31.2   95.7 
-    ## 3 Cala Colombo Neolithic Growth D5_D20_  2.11 -0.722  4.95
-    ## 4 Cala Colombo Neolithic CBR    P       58.2  NA     NA   
-    ## 5 Cala Colombo Neolithic Growth P        1.81 NA     NA
+    ## # A tibble: 5 × 8
+    ##   Site         Culture   DV     IV            Est       Lwr       Upr Ratio_eval
+    ##   <chr>        <chr>     <chr>  <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>     
+    ## 1 Cala Colombo Neolithic TFR    D5_D20_      7.26     3.74      14.1  Normal    
+    ## 2 Cala Colombo Neolithic CBR    D5_D20_     55.0     31.3       78.8  Normal    
+    ## 3 Cala Colombo Neolithic Growth D5_D20_      1.57    -0.856      3.99 Normal    
+    ## 4 Cala Colombo Neolithic CBR    P           58.2     NA         NA    Normal    
+    ## 5 Cala Colombo Neolithic Growth P            1.81    NA         NA    Normal
 
-#### `simdr`: Create a reference set of simulated skeletal samples
+**`diest` with subsettings dependent and independent variables**
+
+By setting the `IV` and `DV` arguments, a subset of results can be
+displayed.
+
+``` r
+BA %>%
+  slice(12) %>%
+  diest(IV="D5_D20_", DV = "TFR")
+```
+
+    ## # A tibble: 1 × 8
+    ##   Site         Culture   DV    IV            Est       Lwr       Upr Ratio_eval
+    ##   <chr>        <chr>     <chr> <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>     
+    ## 1 Cala Colombo Neolithic TFR   D5_D20_      7.11      3.48      14.5 Normal
+
+**`diest` with full prediction results**
+
+Full results of the prediction can be obtained by setting `summary=F`.
+
+``` r
+BA %>%
+  slice(12) %>%
+  diest(summary=F)
+```
+
+    ## # A tibble: 1 × 4
+    ##   Site         Culture   dr_data           DIest           
+    ##   <chr>        <chr>     <list>            <list>          
+    ## 1 Cala Colombo Neolithic <tibble [1 × 10]> <tibble [5 × 9]>
+
+And further analyzed by `unnest()`.
+
+``` r
+BA %>%
+  slice(12) %>%
+  diest(summary=F) %>% 
+  unnest(DIest)
+```
+
+    ## # A tibble: 5 × 12
+    ##   Site     Culture dr_data  DV    IV    Ref   Glance     Est   Lwr   Upr Ratio…¹
+    ##   <chr>    <chr>   <list>   <chr> <chr> <lis> <list>   <dbl> <dbl> <dbl>   <dbl>
+    ## 1 Cala Co… Neolit… <tibble> TFR   D5_D… <df>  <tibble>  7.11  3.48 14.5    1.82 
+    ## 2 Cala Co… Neolit… <tibble> CBR   D5_D… <df>  <tibble> 55.8  27.0  84.6    1.82 
+    ## 3 Cala Co… Neolit… <tibble> Grow… D5_D… <df>  <tibble>  1.14 -1.47  3.75   1.82 
+    ## 4 Cala Co… Neolit… <tibble> CBR   P     <df>  <NULL>   58.2  NA    NA      0.451
+    ## 5 Cala Co… Neolit… <tibble> Grow… P     <df>  <NULL>    1.81 NA    NA      0.451
+    ## # … with 1 more variable: Ratio_eval <chr>, and abbreviated variable name
+    ## #   ¹​Ratio_lim
+
+**`diest` based on raw data format**
+
+Raw data format must be converted to summary data format before using
+`diest`.
+
+``` r
+BAraw %>%
+  # Convert raw to summary data format (compute demographic ratios)
+  dr() %>% 
+  # Select data for two sites
+  slice(12, 24) %>%
+  # Predict demographic variables
+  diest()
+```
+
+    ## # A tibble: 22 × 8
+    ##    Site         Culture   DV     IV            Est       Lwr       Upr Ratio_e…¹
+    ##    <chr>        <fct>     <chr>  <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>    
+    ##  1 Cala Colombo Neolithic TFR    D5_D20_     6.90       3.38     14.1  Normal   
+    ##  2 Cala Colombo Neolithic TFR    D3_D20_     7.29       3.71     14.3  Normal   
+    ##  3 Cala Colombo Neolithic TFR    D1_D20_     6.03       3.59     10.1  Normal   
+    ##  4 Cala Colombo Neolithic CBR    D5_D20_    54.5       25.7      83.3  Normal   
+    ##  5 Cala Colombo Neolithic CBR    D3_D20_    56.4       29.2      83.5  Normal   
+    ##  6 Cala Colombo Neolithic CBR    D1_D20_    48.2       27.3      69.2  Normal   
+    ##  7 Cala Colombo Neolithic Growth D5_D20_     1.04      -1.57      3.65 Normal   
+    ##  8 Cala Colombo Neolithic Growth D3_D20_     1.24      -1.20      3.69 Normal   
+    ##  9 Cala Colombo Neolithic Growth D1_D20_     0.607     -1.31      2.52 Normal   
+    ## 10 Cala Colombo Neolithic CBR    P          56.2       NA        NA    Normal   
+    ## # … with 12 more rows, and abbreviated variable name ¹​Ratio_eval
+
+#### `plot_diest`: Plots prediction model and estimation for a selected site
+
+The function visualizes the prediction model. The plot has an
+age-at-death ratio (independent variable) on the X axis and a
+demographic variable (dependent variable) on the Y axis. The scatter
+shows the reference set of simulated skeletal samples (points),
+regression line used for a prediction, and the age-at-death ratio and
+predicted variable for a given Site.
+
+The function accepts data in the summary format.
+
+The age-at-death ratio (D5+/D20+ as default), estimated demographic
+variable (Growth as default), and demographic pattern of reference
+populations (see diest() for defaults) can be set by the user.
+
+The function can be applied for one Site only.
+
+**`plot_diest` with default settings**
+
+``` r
+BA %>%
+slice(12) %>%
+plot_diest()
+```
+
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+
+![](README_files/figure-gfm/plot_diest_default-1.png)<!-- -->
+
+**`plot_diest` with user-defined settings**
+
+``` r
+BA %>%
+slice(12) %>%
+plot_diest(DV = "TFR", samples=500, e0_min=25, e0_max=30)
+```
+
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+
+![](README_files/figure-gfm/plot_diest_user-1.png)<!-- -->
+
+#### `simdr_CD`: Creates a reference set of simulated skeletal samples
 
 `simdr_CD` is a helper function that creates a reference set of skeletal
-samples drawn from Coale and Demeny (1983) set of model life tables. For
-parameters description, run `help(simdr_CD)`.
+samples drawn from Coale and Demeny (1983) set of model life tables.
+Each row contains one simulated skeletal sample. For parameters
+description, run `help(simdr_CD)`.
+
+**`simdr_CD` with default settings**
 
 ``` r
 # Simulation based on the default settings 
@@ -202,46 +399,69 @@ simdr_CD() %>%
   as_tibble()
 ```
 
-    ## # A tibble: 100 × 30
-    ##    SSS   Samples D20_raw e0_min e0_max Growth…¹ Growt…² Alpha Beta  Growth l27.5
-    ##    <lgl>   <dbl>   <dbl>  <dbl>  <dbl>    <dbl>   <dbl> <lgl> <lgl>  <dbl> <dbl>
-    ##  1 TRUE      100      50     20     30       -4       8 NA    NA     4.32  0.339
-    ##  2 TRUE      100      50     20     30       -4       8 NA    NA     5.05  0.355
-    ##  3 TRUE      100      50     20     30       -4       8 NA    NA    -3.94  0.460
-    ##  4 TRUE      100      50     20     30       -4       8 NA    NA     5.44  0.416
-    ##  5 TRUE      100      50     20     30       -4       8 NA    NA    -2.28  0.474
-    ##  6 TRUE      100      50     20     30       -4       8 NA    NA     5.00  0.416
-    ##  7 TRUE      100      50     20     30       -4       8 NA    NA     0.505 0.431
-    ##  8 TRUE      100      50     20     30       -4       8 NA    NA     2.61  0.460
-    ##  9 TRUE      100      50     20     30       -4       8 NA    NA    -2.03  0.446
-    ## 10 TRUE      100      50     20     30       -4       8 NA    NA     5.88  0.446
-    ## # … with 90 more rows, 19 more variables: e0 <dbl>, CBR <dbl>, TFR <dbl>,
-    ## #   n <int>, D0 <int>, D1_ <int>, D3_ <int>, D5_ <int>, D15_ <int>, D20_ <int>,
-    ## #   D0_14 <int>, D5_14 <int>, D5_19 <int>, D1_D20_ <dbl>, D3_D20_ <dbl>,
-    ## #   D5_D20_ <dbl>, JI <dbl>, P <dbl>, D0_14_D0_ <dbl>, and abbreviated variable
-    ## #   names ¹​Growth_min, ²​Growth_max
+    ## # A tibble: 100 × 28
+    ##    SSS   Samples D20_raw e0_min e0_max Growth…¹ Growt…² Growth l27.5    e0   CBR
+    ##    <lgl>   <dbl>   <dbl>  <dbl>  <dbl>    <dbl>   <dbl>  <dbl> <dbl> <dbl> <dbl>
+    ##  1 TRUE      100      50     20     30       -3       3   1.16 0.339  20.9  63.0
+    ##  2 TRUE      100      50     20     30       -3       3  -2.47 0.431  27.0  16.3
+    ##  3 TRUE      100      50     20     30       -3       3   2.14 0.324  20.0  80.3
+    ##  4 TRUE      100      50     20     30       -3       3   1.87 0.355  21.9  70.3
+    ##  5 TRUE      100      50     20     30       -3       3  -1.46 0.401  24.9  25.8
+    ##  6 TRUE      100      50     20     30       -3       3  -1.78 0.401  24.9  23.2
+    ##  7 TRUE      100      50     20     30       -3       3  -1.65 0.446  28.0  21.2
+    ##  8 TRUE      100      50     20     30       -3       3  -1.81 0.355  21.9  26.6
+    ##  9 TRUE      100      50     20     30       -3       3  -1.94 0.474  30.0  17.5
+    ## 10 TRUE      100      50     20     30       -3       3  -1.83 0.416  26.0  21.7
+    ## # … with 90 more rows, 17 more variables: TFR <dbl>, n <int>, D0 <int>,
+    ## #   D1_ <int>, D3_ <int>, D5_ <int>, D15_ <int>, D20_ <int>, D0_14 <int>,
+    ## #   D5_14 <int>, D5_19 <int>, D1_D20_ <dbl>, D3_D20_ <dbl>, D5_D20_ <dbl>,
+    ## #   JI <dbl>, P <dbl>, D0_14_D0_ <dbl>, and abbreviated variable names
+    ## #   ¹​Growth_min, ²​Growth_max
+
+**`simdr_CD` with user-defined settings**
 
 ``` r
-# Simulation based on the user-defined settings
 simdr_CD(samples = 200, D20_raw = 20, e0_min = 30, e0_max = 40) %>% 
   as_tibble()
 ```
 
-    ## # A tibble: 200 × 30
-    ##    SSS   Samples D20_raw e0_min e0_max Growth…¹ Growt…² Alpha Beta  Growth l27.5
-    ##    <lgl>   <dbl>   <dbl>  <dbl>  <dbl>    <dbl>   <dbl> <lgl> <lgl>  <dbl> <dbl>
-    ##  1 TRUE      200      20     30     40       -4       8 NA    NA     4.32  0.489
-    ##  2 TRUE      200      20     30     40       -4       8 NA    NA    -3.88  0.531
-    ##  3 TRUE      200      20     30     40       -4       8 NA    NA    -1.29  0.474
-    ##  4 TRUE      200      20     30     40       -4       8 NA    NA     1.89  0.597
-    ##  5 TRUE      200      20     30     40       -4       8 NA    NA     0.253 0.489
-    ##  6 TRUE      200      20     30     40       -4       8 NA    NA    -1.85  0.571
-    ##  7 TRUE      200      20     30     40       -4       8 NA    NA     0.919 0.474
-    ##  8 TRUE      200      20     30     40       -4       8 NA    NA    -2.74  0.610
-    ##  9 TRUE      200      20     30     40       -4       8 NA    NA    -3.82  0.558
-    ## 10 TRUE      200      20     30     40       -4       8 NA    NA    -1.27  0.558
-    ## # … with 190 more rows, 19 more variables: e0 <dbl>, CBR <dbl>, TFR <dbl>,
-    ## #   n <int>, D0 <int>, D1_ <int>, D3_ <int>, D5_ <int>, D15_ <int>, D20_ <int>,
-    ## #   D0_14 <int>, D5_14 <int>, D5_19 <int>, D1_D20_ <dbl>, D3_D20_ <dbl>,
-    ## #   D5_D20_ <dbl>, JI <dbl>, P <dbl>, D0_14_D0_ <dbl>, and abbreviated variable
-    ## #   names ¹​Growth_min, ²​Growth_max
+    ## # A tibble: 200 × 28
+    ##    SSS   Samples D20_raw e0_min e0_max Growt…¹ Growt…²  Growth l27.5    e0   CBR
+    ##    <lgl>   <dbl>   <dbl>  <dbl>  <dbl>   <dbl>   <dbl>   <dbl> <dbl> <dbl> <dbl>
+    ##  1 TRUE      200      20     30     40      -3       3  1.16   0.489  31.0  44.1
+    ##  2 TRUE      200      20     30     40      -3       3  0.0211 0.517  33.0  30.5
+    ##  3 TRUE      200      20     30     40      -3       3  0.399  0.503  32.0  35.1
+    ##  4 TRUE      200      20     30     40      -3       3 -0.849  0.474  30.0  25.7
+    ##  5 TRUE      200      20     30     40      -3       3 -1.25   0.585  38.1  17.1
+    ##  6 TRUE      200      20     30     40      -3       3  2.16   0.558  36.1  49.0
+    ##  7 TRUE      200      20     30     40      -3       3 -1.27   0.517  33.0  20.1
+    ##  8 TRUE      200      20     30     40      -3       3 -1.76   0.571  37.1  14.6
+    ##  9 TRUE      200      20     30     40      -3       3 -1.40   0.585  38.1  16.2
+    ## 10 TRUE      200      20     30     40      -3       3  1.79   0.531  34.0  47.3
+    ## # … with 190 more rows, 17 more variables: TFR <dbl>, n <int>, D0 <int>,
+    ## #   D1_ <int>, D3_ <int>, D5_ <int>, D15_ <int>, D20_ <int>, D0_14 <int>,
+    ## #   D5_14 <int>, D5_19 <int>, D1_D20_ <dbl>, D3_D20_ <dbl>, D5_D20_ <dbl>,
+    ## #   JI <dbl>, P <dbl>, D0_14_D0_ <dbl>, and abbreviated variable names
+    ## #   ¹​Growth_min, ²​Growth_max
+
+**Using `simdr_CD` to study a relationship between demographic
+variables**
+
+Since `simdr_CD` generates reference skeletal samples or populations
+with various life expectancies at birth and annual growth rates, it can
+be used to depict a relationship between demographic variables.
+
+``` r
+simdr_CD() %>% 
+  ggplot(aes(x = TFR, y = Growth)) + 
+  geom_point() + 
+  labs(title = "Relationship between TFR and annual growth rate(%)",
+       subtitle = "Assuming a life expectancy at birth between 20 and 30 years\nand 50 adult deaths in each skeletal sample") + 
+  scale_x_continuous(breaks = seq(0, 20, 1)) + 
+  theme_classic() + 
+  theme(axis.title = element_text(size = 8),
+        plot.title = element_text(size = 10, face = "bold"),
+        plot.subtitle = element_text(size = 9))
+```
+
+![](README_files/figure-gfm/simdr_CD_TFR_Growth-1.png)<!-- -->

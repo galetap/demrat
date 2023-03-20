@@ -1,13 +1,14 @@
-#' Age-at-death ratio calculation
+#' Calculates age-at-death ratios
 #'
-#' Calculate number of skeletons in several age-at-death groups (e.g., D1+, D20+)
+#' Based on age-at-death estimation of individuals, the function calculates
+#' number of skeletons in several age-at-death groups (e.g., D1+, D20+)
 #' and six demographic ratios (D1+/D20+, D3+/D20+, D5+/D20+, D5-14/D20+ aka juvenility index,
-#' D5-19/D5+ aka P index, and D0-14/D0+) for each cemetery sample.
+#' D5-19/D5+ aka P index, and D0-14/D0+) for skeletal sample(s).
 #' @param data A data frame with individuals' age-at-death estimations.
 #' Data frame must contain at least two columns:
 #' \code{Age_min}, Lower limit of age-at-death interval;
 #' \code{Age_max}, Upper limit of age-at-death interval.
-#' For example, the value of 20 means that an individual died
+#' The interval is right-open. The value of 20 years means that an individual died
 #' before her/his 20th birthday, i.e. up to 19.9 years of age.
 #' Two other columns are expected (\code{Site} and \code{Culture}), but they are not required.
 #' @param extra_var Extra variables to be joined to results (e.g. description, absolute chronology of the site).

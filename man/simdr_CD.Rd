@@ -2,7 +2,7 @@
 % Please edit documentation in R/simdr_CD.R
 \name{simdr_CD}
 \alias{simdr_CD}
-\title{Create a reference set of simulated skeletal samples}
+\title{Generates a reference set of simulated skeletal samples}
 \usage{
 simdr_CD(
   sss = T,
@@ -16,13 +16,19 @@ simdr_CD(
 )
 }
 \arguments{
-\item{sss}{If \code{TRUE}, simulated skeletal samples are created as the reference.
-If \code{FALSE}, reference consists from population data,
-the step 3, in which simulated skeletal samples are created, is skipped.}
+\item{sss}{Determines whether a reference set consists
+of simulated skeletal samples with \code{D20_} adults (\code{sss=TRUE}, as default) or
+of simulated skeletal samples with a very large or infinite
+number of adult deaths (\code{sss=FALSE}).
+If \code{sss=FALSE} the Step 3 is skipped and age-at-death ratios are calculated directly
+from the distribution of deaths in the stable population,
+which does not account for an effect of stochastic variation that
+may substantially affect the age composition of deaths in small cemetery samples.}
 
-\item{samples}{Number of simulated skeletal samples to be created.}
+\item{samples}{Number of generated simulated skeletal samples of the reference set.}
 
-\item{D20_raw}{D20+, number of adult skeletons (20+ years) in simulated skeletal samples.}
+\item{D20_raw}{D20+, number of adult skeletons (20+ years) in the real and
+each simulated skeletal sample.}
 
 \item{e0_min}{Minimum value of life expectancy at birth in population from which skeletal samples are drawn.}
 
@@ -36,24 +42,24 @@ the step 3, in which simulated skeletal samples are created, is skipped.}
 Extra variables must be in \code{dr_data} data frame.}
 }
 \value{
-A data frame with summary results.
+A data frame containing:
 
-Summary of function inputs:
-\itemize{sss
-\item \strong{\code{SSS}}: Were simulated skeletal samples generated (\code{TRUE} or \code{FALSE})?
+Summary of function inputs
+\itemize{
+\item{ \strong{\code{SSS}}}: Were simulated skeletal samples in Step 3 generated (\code{TRUE} or \code{FALSE})?
 See \code{sss} argument.
-\item \strong{\code{Samples}}: Total number of skeletal samples created (number of rows in results).
-\item \strong{\code{D20_raw}}: D20+, number of adult skeletons (20+ years) in simulated skeletal samples.
+\item{ \strong{\code{Samples}}}: Total number of skeletal samples created (number of rows in results).
+\item{ \strong{\code{D20_raw}}}: D20+, number of adult skeletons (20+ years)
+in the real and each simulated skeletal samples.
 If \code{sss} is \code{FALSE}, \code{D20_raw} is \code{NA}.
-\item \strong{\code{e0_min}}: Minimum value of life expectancy at birth of population from which skeletal samples were drawn.
-\item \strong{\code{e0_max}}: Maximum value of life expectancy at birth of population from which skeletal samples were drawn.
-\item \strong{\code{growth_min}}: Minimum value of annual growth rate of population from which skeletal samples were drawn.
-\item \strong{\code{growth_max}}: Maximum value of annual growth rate of population from which skeletal samples were drawn.
-\item \strong{\code{Alpha, Beta}}: Not applicable.
+\item{ \strong{\code{e0_min}}}: Minimum value of life expectancy at birth of population from which skeletal samples were drawn.
+\item{ \strong{\code{e0_max}}}: Maximum value of life expectancy at birth of population from which skeletal samples were drawn.
+\item{ \strong{\code{growth_min}}}: Minimum value of annual growth rate of population from which skeletal samples were drawn.
+\item{ \strong{\code{growth_max}}}: Maximum value of annual growth rate of population from which skeletal samples were drawn.
 }
 
-Demographic characteristic of reference population.
-If \code{sss} is TRUE, this is a population from which a skeletal sample is drawn:
+Demographic characteristic of reference population
+from which a skeletal sample is drawn (if \code{sss} is TRUE)
 \itemize{
 \item \strong{\code{Growth}}: Annual growth rate randomly drawn
 from interval between \code{growth_min} and \code{growth_max}.
@@ -65,10 +71,10 @@ calculated from a life table.
 }
 
 Characteristics of distribution of deaths
-(number of deaths in the respective age-at-death interval and demographic ratios).
+(number of deaths in the respective age-at-death interval and age-at-death ratios)
 \itemize{
-\item \strong{\code{n}}: Total number of skeleton in skeletal sample
-\item \strong{\code{D0, D1_, ..., D5_19}: Number of individuals in age-at-death groups;
+\item \strong{\code{n}}: Total number of skeleton in simulated skeletal sample
+\item \strong{\code{D0, D1_, ..., D5_19}}: Number of individuals in age-at-death groups;
 D0+, D1+, ..., D5-19.
 \item \strong{\code{D1_D20_, ..., D5_D20_}}: Age-at-death ratios; D1+/D20+, ..., D5+/D20+.
 \item \strong{\code{JI}}: Juvenility index (D5-14/D20+).
@@ -77,12 +83,12 @@ D0+, D1+, ..., D5-19.
 }
 }
 \description{
-Step 1: Function calculate life table of population based on Coale and Demeny West model.
-Step 2: It applies a growth rate and calculate distribution of deaths in stable population.
-Step 3: It randomly draws deaths from that distribution of deaths.
+Step 1: Function calculates a life table of stationary population based on Coale and Demeny West model.
+Step 2: It applies a growth rate and calculate distribution of deaths in corresponding stable population.
+Step 3: It randomly draws deaths (until number of adults is \code{D20_}) from the distribution of deaths generated in Step 2.
 Step 4: It calculates age-at-death ratios from the distribution of deaths
-(step 2 or 3, it depends on \code{sss} argument.
-All three steps are iterated many times to obtain the reference dataset of simulated skeletal samples.
+(Step 2 or 3, it depends on \code{sss} argument.
+All three steps are iterated many times (see \code{samples}) to obtain the reference set of simulated skeletal samples.
 }
 \examples{
 simdr_CD()

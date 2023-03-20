@@ -75,7 +75,6 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
 
   # Reference sample of simulated skeletal samples with same D20_ value
   ref = simdr_CD(D20_raw=site$D20_, ...)
-  ref <- ref %>% mutate(across(starts_with("Growth"), ~./100))
 
   # Results
   res <-
@@ -144,13 +143,6 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
     # Back transformation of prediction (for TFR only)
     dplyr::mutate(Pred = ifelse(DV=="TFR", purrr::map(Pred, exp), Pred)) %>%
 
-    # Convert to % (for Growth only)
-    dplyr::mutate(Pred = ifelse(DV=="Growth",
-                                purrr::map(.x = Pred,
-                                           .f = ~ .x %>%
-                                             dplyr::mutate(dplyr::across(tidyselect::everything(), ~.*100))),
-                                Pred)) %>%
-
     # Nest or unnest Glance column
     {if (glanced)
       tidyr::unnest(., c(Pred, Glance))
@@ -158,7 +150,7 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
         tidyr::unnest(., Pred)
     } %>%
 
-    # Add estimation based on Bocquet-Appel 2002 regression formula (not computed here)
+    # Add estimation based on Bocquet-Appel 2002 regression formula
     {if("P" %in% names(site))
       dplyr::bind_rows(., list(DV="CBR", IV="P",
                                Ref=list(ref), Data_pred = list(site),

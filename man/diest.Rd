@@ -2,7 +2,7 @@
 % Please edit documentation in R/diest.R
 \name{diest}
 \alias{diest}
-\title{Estimates growth and fertility rate for cemetery samples}
+\title{Estimates growth and fertility rate for skeletal samples}
 \usage{
 diest(
   dr_data,
@@ -12,17 +12,19 @@ diest(
   samples = 100,
   e0_min = 20,
   e0_max = 30,
-  growth_min = -4,
-  growth_max = 8,
+  growth_min = -3,
+  growth_max = 3,
+  IV = c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P"),
+  DV = c("All", "Growth", "TFR", "CBR"),
   extra_var,
   ...
 )
 }
 \arguments{
-\item{dr_data}{A data frame, each row contains data for a single cemetery sample.
-Data frame must have two columns at minimum:
-\code{D20_} (i.e., D20+, number of adult skeletons in a sample)
-and at least one of the following three columns: \code{D1_D20_, D3_D20_, D5_D20_}
+\item{dr_data}{A data frame with one row containing data for a single cemetery sample.
+Data frame must have four columns at minimum:
+\code{Site}, \code{Culture}, \code{D20_} (i.e., D20+, number of adult skeletons in a sample)
+and at least one out of the following three columns: \code{D1_D20_, D3_D20_, D5_D20_}
 (i.e., D1+/D20+, D3+/D20+, D5+/D20+ age-at-death ratios, respectively).}
 
 \item{summary}{If \code{TRUE}, functions returns only estimations.
@@ -44,10 +46,14 @@ the algorithm step, in which simulated skeletal samples are created, is skipped.
 
 \item{growth_max}{Maximum value of annual growth rate in population from which skeletal samples are drawn.}
 
+\item{IV}{Independent variable (the age-at-death ratio) used in the prediction. One or more items from \code{c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P")}.}
+
+\item{DV}{Dependent (demographic) variable to be estimated. One or more items from \code{c("All", "Growth", "TFR", "CBR")}.}
+
 \item{extra_var}{Extra variables to be joined to results (e.g. description, absolute chronology of the site).
 Extra variables must be in \code{dr_data} data frame.}
 
-\item{...}{Other parameters (see \code{simdr_CD} and \code{diest_fun})}
+\item{...}{Other parameters (see \code{simdr_CD} and \code{diest_fn})}
 }
 \value{
 Data frame containing estimation of demographic indicators of population
@@ -93,18 +99,22 @@ BA \%>\%
 slice(5, 12) \%>\%
 diest()
 
-# Adding extra variables
-BA \%>\%
-slice(5, 12) \%>\%
-diest(extra_var = c(Front, C14, dt),
-growth_min = -3, growth_max = 3)
-
 # Demographic estimation based on the reconstructed Bocquet-Appel (2002) raw data
 BAraw \%>\%
 dr() \%>\%
 slice(1:2) \%>\%
 diest()
 
+# Select predicted demographic variables and predictors that are showed in the results
+BA \%>\%
+slice(12) \%>\%
+diest(summary = T, IV=c("D5_D20_"), DV=c("Growth", "TFR"))
+
+# Adding extra variables
+BA \%>\%
+slice(5, 12) \%>\%
+diest(extra_var = c(Front, C14, dt),
+growth_min = -2, growth_max = 2)
 }
 \keyword{demographic}
 \keyword{estimation}

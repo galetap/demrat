@@ -3,7 +3,7 @@
 \docType{data}
 \name{BAraw}
 \alias{BAraw}
-\title{Raw Bocquet-Appel's (2002) dataset}
+\title{Bocquet-Appel's (2002) dataset in the raw data format}
 \format{
 A tibble with 5,115 rows and 4 variables:
 \describe{
@@ -17,9 +17,11 @@ A tibble with 5,115 rows and 4 variables:
 BAraw
 }
 \description{
-Dataset containing age-at-death data for ca. 5,000 European Mesolithic and Neolithic skeletons from 68 sites.
-Data were reconstructed based on Bocquet-Appel's summary Table 1 published in
+Dataset containing age-at-death estimation for 5,115 skeletons from 68 European Mesolithic and Neolithicsites.
+Data were rebuilt from the Bocquet-Appel's summary Table 1 published in
 Bocquet-Appel J-P (2002). Paleoanthropological traces of a Neolithic demographic transition. Current Anthropology 43: 637-650.
-Note that the dataset does not represent the original Bocquet-Appel's raw data that are not available to us.
+Note that the data is a reasonable approximation of the original raw data collected by Bocquet-Appel,
+which were not available to us.
+The dataset is in the raw data format, each row represents one skeleton.
 }
 \keyword{datasets}
