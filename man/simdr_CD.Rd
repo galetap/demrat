@@ -8,8 +8,8 @@ simdr_CD(
   sss = T,
   samples = 100,
   D20_raw = 50,
-  e0_min = 20,
-  e0_max = 30,
+  e0_min = 18,
+  e0_max = 25,
   growth_min = -3,
   growth_max = 3,
   ...

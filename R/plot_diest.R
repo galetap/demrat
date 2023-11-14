@@ -125,7 +125,7 @@ plot_diest <- function(dr_data,
                            se = F, alpha = 0.1, linewidth=0.7) +
       # Plot title, subtitle, x and y
       ggplot2::labs(title = paste0("Regression model for predicting ", DV, " from the ", IV_lab, " ratio"),
-                    subtitle = paste0("Site: ", Site, "; ", n, " skeletons"),
+                    subtitle = paste0("Site: ", Site, "; ", n, " total skeletons", "; ", dr_data$D20_, " adult skeletons"),
                     x=IV_lab,
                     y = paste0(DV, " (", Units, ")")) +
       # Plot caption (depends on whether Ratio is higher than Ratio limit)
@@ -152,7 +152,7 @@ plot_diest <- function(dr_data,
                                             number_format(0.01)(Ratio),
                                             "\n", DV, " = ",
                                             number_format(0.1)(Est),
-                                            " ", Units)),
+                                            ifelse(Units=="%",""," "), Units)),
                          hjust = 0, vjust = -0.1, size = 5/14*base_size, col = "#800000") +
       ggplot2::theme_classic() +
       ggplot2::theme(axis.title = element_text(size = base_size),

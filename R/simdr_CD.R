@@ -70,7 +70,7 @@
 
 # Life table simulation & skeletal samples creation / Coale and Demeny ---------------------
 simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
-                     e0_min = 20, e0_max = 30,
+                     e0_min = 18, e0_max = 25,
                      growth_min = -3.0, growth_max = 3.0, ...) {
 
   # Set random number to obtain reproducible results

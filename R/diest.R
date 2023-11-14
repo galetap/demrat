@@ -84,7 +84,7 @@
 # Each row of dr_data is dr for individual site
 diest <- function(dr_data, summary=T, pred_level=0.95,
                   sss=T, samples = 100,
-                  e0_min = 20, e0_max = 30,
+                  e0_min = 18, e0_max = 25,
                   growth_min = -3.0, growth_max = 3.0,
                   IV = c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P"),
                   DV = c("All", "Growth", "TFR", "CBR"),
