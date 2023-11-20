@@ -149,9 +149,9 @@ plot_diest <- function(dr_data,
       # Site information
       ggplot2::geom_text(aes(x = Ratio*1.01, y = min(Ref[,"y"]),
                              label = paste0(Site,"\n", IV_lab, " = ",
-                                            number_format(0.01)(Ratio),
+                                            scales::number_format(0.01)(Ratio),
                                             "\n", DV, " = ",
-                                            number_format(0.1)(Est),
+                                            scales::number_format(0.1)(Est),
                                             ifelse(Units=="%",""," "), Units)),
                          hjust = 0, vjust = -0.1, size = 5/14*base_size, col = "#800000") +
       ggplot2::theme_classic() +

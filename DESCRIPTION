@@ -1,6 +1,6 @@
 Package: demrat
 Title: Estimation Of Fertility And Growth Rates For Skeletal Samples
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: 
     person(given = "Patrik",
            family = "Galeta",
@@ -36,7 +36,8 @@ Imports:
     tidyselect,
     mgcv,
     broom,
-    ggplot2
+    ggplot2,
+    scales
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

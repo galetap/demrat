@@ -57,18 +57,19 @@ dr <- function(data, extra_var) {
     age_div(data) %>%
     dplyr::select(Site, Culture, starts_with("A_")) %>%
     dplyr::group_by(Site, Culture) %>%
-    dplyr::summarise_all(.funs = sum) %>% #sum of all A_ columns by categories
+    dplyr::summarise(across(.cols = starts_with("A_"),
+                            .funs = sum) %>% #sum of all A_ columns by categories
     dplyr::ungroup() %>%
-    dplyr::mutate(n = rowSums(.[,paste("A_", 0:99, sep = "")]), #0:99 are age-at-death not column number
-                  D0 = rowSums(.[,paste("A_", 0, sep = "")]),
-                  D1_ = rowSums(.[,paste("A_", 1:99, sep = "")]),
-                  D3_ = rowSums(.[,paste("A_", 3:99, sep = "")]),
-                  D5_ = rowSums(.[,paste("A_", 5:99, sep = "")]),
-                  D15_ = rowSums(.[,paste("A_", 15:99, sep = "")]),
-                  D0_14 = rowSums(.[,paste("A_", 0:14, sep = "")]),
-                  D5_14 = rowSums(.[,paste("A_", 5:14, sep = "")]),
-                  D5_19 = rowSums(.[,paste("A_", 5:19, sep = "")]),
-                  D20_ = rowSums(.[,paste("A_", 20:99, sep = "")])) %>%
+    dplyr::mutate(n = base::rowSums(.[,paste("A_", 0:99, sep = "")]), #0:99 are age-at-death not column number
+                  D0 = base::rowSums(.[,paste("A_", 0, sep = "")]),
+                  D1_ = base::rowSums(.[,paste("A_", 1:99, sep = "")]),
+                  D3_ = base::rowSums(.[,paste("A_", 3:99, sep = "")]),
+                  D5_ = base::rowSums(.[,paste("A_", 5:99, sep = "")]),
+                  D15_ = base::rowSums(.[,paste("A_", 15:99, sep = "")]),
+                  D0_14 = base::rowSums(.[,paste("A_", 0:14, sep = "")]),
+                  D5_14 = base::rowSums(.[,paste("A_", 5:14, sep = "")]),
+                  D5_19 = base::rowSums(.[,paste("A_", 5:19, sep = "")]),
+                  D20_ = base::rowSums(.[,paste("A_", 20:99, sep = "")])) %>%
     dplyr::select(-starts_with("A_")) %>%
     dplyr::mutate(D1_D20_ = D1_/D20_, #Galeta 2010
                   D3_D20_ = D3_/D20_, #Galeta 2010

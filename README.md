@@ -79,20 +79,19 @@ BA
 ```
 
     ## # A tibble: 68 × 12
-    ##    Site         Front   C14    dt  D0_4 D5_19   D20_     n D5_19…¹   D5_ D5_D20_
-    ##    <chr>        <int> <int> <int> <dbl> <dbl>  <dbl> <dbl>   <dbl> <dbl>   <dbl>
-    ##  1 Aisne series  5000  4900   100 10    15     25       50   0.375  40      1.6 
-    ##  2 Aiterhofen …  5400  5300   100  5.4  21.4  115.     142   0.157 137.     1.19
-    ##  3 Ajdovska Ja…  5500  4394  1106  6     8     11       25   0.421  19      1.73
-    ##  4 Aven de la …  5500  3176  2324  3.2   7.8   49       60   0.137  56.8    1.16
-    ##  5 Bade-Wutemb…  5400  5250   150  7.2  12.8   11       31   0.538  23.8    2.16
-    ##  6 Baume Bourb…  5500  4700   800  1.75  3.91   9.33    15   0.295  13.2    1.42
-    ##  7 Belleville    4900  2548  2352  9.8  35.6   95.6    141   0.272 131.     1.37
-    ##  8 Breuil-en-V…  4900  2700  2200 28    20     40       88   0.333  60      1.5 
-    ##  9 Brochtorff …  5900  3900  2000  2    15     55       72   0.214  70      1.27
-    ## 10 Bruchstedt    5400  5250   150  8.2  18.8   34       61   0.356  52.8    1.55
-    ## # … with 58 more rows, 1 more variable: Culture <chr>, and abbreviated variable
-    ## #   name ¹​D5_19_D5_
+    ##    Site   Front   C14    dt  D0_4 D5_19   D20_     n     P   D5_ D5_D20_ Culture
+    ##    <chr>  <int> <int> <int> <dbl> <dbl>  <dbl> <dbl> <dbl> <dbl>   <dbl> <chr>  
+    ##  1 Aisne…  5000  4900   100 10    15     25       50 0.375  40      1.6  Neolit…
+    ##  2 Aiter…  5400  5300   100  5.4  21.4  115.     142 0.157 137.     1.19 Neolit…
+    ##  3 Ajdov…  5500  4394  1106  6     8     11       25 0.421  19      1.73 Neolit…
+    ##  4 Aven …  5500  3176  2324  3.2   7.8   49       60 0.137  56.8    1.16 Neolit…
+    ##  5 Bade-…  5400  5250   150  7.2  12.8   11       31 0.538  23.8    2.16 Neolit…
+    ##  6 Baume…  5500  4700   800  1.75  3.91   9.33    15 0.295  13.2    1.42 Neolit…
+    ##  7 Belle…  4900  2548  2352  9.8  35.6   95.6    141 0.272 131.     1.37 Neolit…
+    ##  8 Breui…  4900  2700  2200 28    20     40       88 0.333  60      1.5  Neolit…
+    ##  9 Broch…  5900  3900  2000  2    15     55       72 0.214  70      1.27 Neolit…
+    ## 10 Bruch…  5400  5250   150  8.2  18.8   34       61 0.356  52.8    1.55 Neolit…
+    ## # … with 58 more rows
 
 ``` r
 # For column description, run help(BA).
@@ -228,14 +227,14 @@ BA %>%
     ## # A tibble: 10 × 8
     ##    Site         Culture    DV     IV            Est       Lwr       Upr Ratio_…¹
     ##    <chr>        <chr>      <chr>  <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>   
-    ##  1 Cala Colombo Neolithic  TFR    D5_D20_    7.11        3.48    14.5   Normal  
-    ##  2 Cala Colombo Neolithic  CBR    D5_D20_   55.8        27.0     84.6   Normal  
-    ##  3 Cala Colombo Neolithic  Growth D5_D20_    1.14       -1.47     3.75  Normal  
+    ##  1 Cala Colombo Neolithic  TFR    D5_D20_    7.89        4.09    15.2   Normal  
+    ##  2 Cala Colombo Neolithic  CBR    D5_D20_   60.8        33.1     88.4   Normal  
+    ##  3 Cala Colombo Neolithic  Growth D5_D20_    1.14       -1.14     3.43  Normal  
     ##  4 Cala Colombo Neolithic  CBR    P         58.2        NA       NA     Normal  
     ##  5 Cala Colombo Neolithic  Growth P          1.81       NA       NA     Normal  
-    ##  6 Djerdap      Mesolithic TFR    D5_D20_    4.56        3.41     6.09  Normal  
-    ##  7 Djerdap      Mesolithic CBR    D5_D20_   36.3        24.7     47.9   Normal  
-    ##  8 Djerdap      Mesolithic Growth D5_D20_   -0.597      -1.68     0.482 Normal  
+    ##  6 Djerdap      Mesolithic TFR    D5_D20_    4.74        3.50     6.43  Normal  
+    ##  7 Djerdap      Mesolithic CBR    D5_D20_   38.2        25.0     51.4   Normal  
+    ##  8 Djerdap      Mesolithic Growth D5_D20_   -0.799      -1.95     0.349 Normal  
     ##  9 Djerdap      Mesolithic CBR    P         34.4        NA       NA     Normal  
     ## 10 Djerdap      Mesolithic Growth P         -0.0944     NA       NA     Normal  
     ## # … with abbreviated variable name ¹​Ratio_eval
@@ -276,7 +275,7 @@ BA %>%
     ## # A tibble: 1 × 8
     ##   Site         Culture   DV    IV            Est       Lwr       Upr Ratio_eval
     ##   <chr>        <chr>     <chr> <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>     
-    ## 1 Cala Colombo Neolithic TFR   D5_D20_      7.11      3.48      14.5 Normal
+    ## 1 Cala Colombo Neolithic TFR   D5_D20_      7.89      4.09      15.2 Normal
 
 **`diest` with full prediction results**
 
@@ -305,11 +304,11 @@ BA %>%
     ## # A tibble: 5 × 12
     ##   Site     Culture dr_data  DV    IV    Ref   Glance     Est   Lwr   Upr Ratio…¹
     ##   <chr>    <chr>   <list>   <chr> <chr> <lis> <list>   <dbl> <dbl> <dbl>   <dbl>
-    ## 1 Cala Co… Neolit… <tibble> TFR   D5_D… <df>  <tibble>  7.11  3.48 14.5    1.82 
-    ## 2 Cala Co… Neolit… <tibble> CBR   D5_D… <df>  <tibble> 55.8  27.0  84.6    1.82 
-    ## 3 Cala Co… Neolit… <tibble> Grow… D5_D… <df>  <tibble>  1.14 -1.47  3.75   1.82 
-    ## 4 Cala Co… Neolit… <tibble> CBR   P     <df>  <NULL>   58.2  NA    NA      0.451
-    ## 5 Cala Co… Neolit… <tibble> Grow… P     <df>  <NULL>    1.81 NA    NA      0.451
+    ## 1 Cala Co… Neolit… <tibble> TFR   D5_D… <df>  <tibble>  7.89  4.09 15.2    1.97 
+    ## 2 Cala Co… Neolit… <tibble> CBR   D5_D… <df>  <tibble> 60.8  33.1  88.4    1.97 
+    ## 3 Cala Co… Neolit… <tibble> Grow… D5_D… <df>  <tibble>  1.14 -1.14  3.43   1.97 
+    ## 4 Cala Co… Neolit… <tibble> CBR   P     <df>  <NULL>   58.2  NA    NA      0.491
+    ## 5 Cala Co… Neolit… <tibble> Grow… P     <df>  <NULL>    1.81 NA    NA      0.491
     ## # … with 1 more variable: Ratio_eval <chr>, and abbreviated variable name
     ## #   ¹​Ratio_lim
 
@@ -331,16 +330,16 @@ BAraw %>%
     ## # A tibble: 22 × 8
     ##    Site         Culture   DV     IV            Est       Lwr       Upr Ratio_e…¹
     ##    <chr>        <fct>     <chr>  <chr>   <dbl[1d]> <dbl[1d]> <dbl[1d]> <chr>    
-    ##  1 Cala Colombo Neolithic TFR    D5_D20_     6.90       3.38     14.1  Normal   
-    ##  2 Cala Colombo Neolithic TFR    D3_D20_     7.29       3.71     14.3  Normal   
-    ##  3 Cala Colombo Neolithic TFR    D1_D20_     6.03       3.59     10.1  Normal   
-    ##  4 Cala Colombo Neolithic CBR    D5_D20_    54.5       25.7      83.3  Normal   
-    ##  5 Cala Colombo Neolithic CBR    D3_D20_    56.4       29.2      83.5  Normal   
-    ##  6 Cala Colombo Neolithic CBR    D1_D20_    48.2       27.3      69.2  Normal   
-    ##  7 Cala Colombo Neolithic Growth D5_D20_     1.04      -1.57      3.65 Normal   
-    ##  8 Cala Colombo Neolithic Growth D3_D20_     1.24      -1.20      3.69 Normal   
-    ##  9 Cala Colombo Neolithic Growth D1_D20_     0.607     -1.31      2.52 Normal   
-    ## 10 Cala Colombo Neolithic CBR    P          56.2       NA        NA    Normal   
+    ##  1 Cala Colombo Neolithic TFR    D5_D20_    7.63        3.97     14.7  Normal   
+    ##  2 Cala Colombo Neolithic TFR    D3_D20_    7.80        4.23     14.4  Normal   
+    ##  3 Cala Colombo Neolithic TFR    D1_D20_    6.06        3.56     10.3  Normal   
+    ##  4 Cala Colombo Neolithic CBR    D5_D20_   59.3        31.7      87.0  Normal   
+    ##  5 Cala Colombo Neolithic CBR    D3_D20_   59.4        33.8      84.9  Normal   
+    ##  6 Cala Colombo Neolithic CBR    D1_D20_   49.2        27.1      71.4  Normal   
+    ##  7 Cala Colombo Neolithic Growth D5_D20_    1.10       -1.18      3.38 Normal   
+    ##  8 Cala Colombo Neolithic Growth D3_D20_    0.937      -1.31      3.18 Normal   
+    ##  9 Cala Colombo Neolithic Growth D1_D20_    0.0998     -1.94      2.14 Normal   
+    ## 10 Cala Colombo Neolithic CBR    P         56.2        NA        NA    Normal   
     ## # … with 12 more rows, and abbreviated variable name ¹​Ratio_eval
 
 #### `plot_diest`: Plots prediction model and estimation for a selected site
@@ -402,16 +401,16 @@ simdr_CD() %>%
     ## # A tibble: 100 × 28
     ##    SSS   Samples D20_raw e0_min e0_max Growth…¹ Growt…² Growth l27.5    e0   CBR
     ##    <lgl>   <dbl>   <dbl>  <dbl>  <dbl>    <dbl>   <dbl>  <dbl> <dbl> <dbl> <dbl>
-    ##  1 TRUE      100      50     20     30       -3       3   1.16 0.339  20.9  63.0
-    ##  2 TRUE      100      50     20     30       -3       3  -2.47 0.431  27.0  16.3
-    ##  3 TRUE      100      50     20     30       -3       3   2.14 0.324  20.0  80.3
-    ##  4 TRUE      100      50     20     30       -3       3   1.87 0.355  21.9  70.3
-    ##  5 TRUE      100      50     20     30       -3       3  -1.46 0.401  24.9  25.8
-    ##  6 TRUE      100      50     20     30       -3       3  -1.78 0.401  24.9  23.2
-    ##  7 TRUE      100      50     20     30       -3       3  -1.65 0.446  28.0  21.2
-    ##  8 TRUE      100      50     20     30       -3       3  -1.81 0.355  21.9  26.6
-    ##  9 TRUE      100      50     20     30       -3       3  -1.94 0.474  30.0  17.5
-    ## 10 TRUE      100      50     20     30       -3       3  -1.83 0.416  26.0  21.7
+    ##  1 TRUE      100      50     18     25       -3       3  1.16  0.309  19.0  68.8
+    ##  2 TRUE      100      50     18     25       -3       3  1.49  0.339  20.9  67.7
+    ##  3 TRUE      100      50     18     25       -3       3 -0.880 0.309  19.0  41.5
+    ##  4 TRUE      100      50     18     25       -3       3 -1.60  0.324  20.0  31.7
+    ##  5 TRUE      100      50     18     25       -3       3  2.19  0.386  23.9  69.5
+    ##  6 TRUE      100      50     18     25       -3       3  0.696 0.294  18.1  65.0
+    ##  7 TRUE      100      50     18     25       -3       3 -2.40  0.294  18.1  27.3
+    ##  8 TRUE      100      50     18     25       -3       3 -1.83  0.386  23.9  23.9
+    ##  9 TRUE      100      50     18     25       -3       3 -1.96  0.339  20.9  26.7
+    ## 10 TRUE      100      50     18     25       -3       3  2.93  0.324  20.0  92.6
     ## # … with 90 more rows, 17 more variables: TFR <dbl>, n <int>, D0 <int>,
     ## #   D1_ <int>, D3_ <int>, D5_ <int>, D15_ <int>, D20_ <int>, D0_14 <int>,
     ## #   D5_14 <int>, D5_19 <int>, D1_D20_ <dbl>, D3_D20_ <dbl>, D5_D20_ <dbl>,
