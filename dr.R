@@ -81,7 +81,7 @@ dr <- function(data, extra_var=NULL) {
     dplyr::left_join(extra_var_sel, by=c("Site", "Culture")) %>%
     dplyr::select(Site, Culture, {{extra_var}}, everything())
 
-  utils::write.table(res,
-                     "clipboard", sep="\t", dec = ",", col.names = NA)
+  # utils::write.table(res,
+  #                    "clipboard", sep="\t", dec = ",", col.names = NA)
   return(res)
 }
