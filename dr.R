@@ -44,14 +44,14 @@
 # Demographic ratio calculation / function ----------------------------------------------------
 # data: Columns must be named as "Site", "Culture", "Age_min" and "Age_max"
 
-dr <- function(data, extra_var=NULL) {
+dr <- function(data) {
   # Helper df for left_join (see later), contains distinct combinations of Site, culture and extra_var
   # age_div helps to add Site and Culture columns
-  extra_var_sel <-
-    data %>%
-    age_div(extra_var={{extra_var}}) %>%
-    dplyr::select(Site, Culture, {{extra_var}}) %>%
-    dplyr::distinct()
+  # extra_var_sel <-
+  #   data %>%
+  #   age_div(extra_var={{extra_var}}) %>%
+  #   dplyr::select(Site, Culture, {{extra_var}}) %>%
+  #   dplyr::distinct()
 
   res <-
     demrat::age_div(data) %>%
@@ -76,10 +76,10 @@ dr <- function(data, extra_var=NULL) {
                   D5_D20_ = D5_/D20_, #Galeta 2010
                   JI = D5_14/D20_, #Bocquet-Appel, Masset 1983
                   P = D5_19/D5_, #Bocquet-Appel, 2002
-                  D0_14_D0_ = D0_14/n) %>%  #McFadden et al. 2018
+                  D0_14_D0_ = D0_14/n)   #McFadden et al. 2018
     # Add extra_var columns
-    dplyr::left_join(extra_var_sel, by=c("Site", "Culture")) %>%
-    dplyr::select(Site, Culture, {{extra_var}}, everything())
+    # dplyr::left_join(extra_var_sel, by=c("Site", "Culture")) %>%
+    # dplyr::select(Site, Culture, {{extra_var}}, everything())
 
   # utils::write.table(res,
   #                    "clipboard", sep="\t", dec = ",", col.names = NA)
