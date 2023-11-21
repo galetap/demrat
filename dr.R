@@ -54,7 +54,8 @@ dr <- function(data) {
   #   dplyr::distinct()
 
   res <-
-    demrat::age_div(data) %>%
+    data %>%
+    demrat::age_div() %>%
     dplyr::select(Site, Culture, starts_with("A_")) %>%
     dplyr::group_by(Site, Culture) %>%
     dplyr::summarise(across(.cols = starts_with("A_"),
