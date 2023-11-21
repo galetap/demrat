@@ -30,7 +30,7 @@
 # Divide individuals into 0-99 age categories / function ---------------------------
 # Columns must be named as "Site", "Culture", "Age_min" and "Age_max"
 
-age_div <- function(data, show_res = F, extra_var=NULL) {
+age_div <- function(data, show_res = F, extra_var) {
   if(length(dplyr::intersect(c("Age_min", "Age_max"), colnames(data)))!=2){
     message("Dataframe must contain columns Age_min and Age_max")
   }
