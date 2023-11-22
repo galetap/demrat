@@ -6,6 +6,12 @@
 \usage{
 plot_diest(
   dr_data,
+  samples = 100,
+  e0_min = 18,
+  e0_max = 25,
+  growth_min = -3,
+  growth_max = 3,
+  pred_level = 0.95,
   IV = c("D5_D20_", "D3_D20_", "D1_D20_"),
   DV = c("Growth", "TFR", "CBR"),
   base_size = 9,

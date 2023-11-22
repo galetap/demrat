@@ -43,6 +43,10 @@
 
 # Plot of the unique prediction model for a single Site ---------------------
 plot_diest <- function(dr_data,
+                       samples = 100,
+                       e0_min = 18, e0_max = 25,
+                       growth_min = -3.0, growth_max = 3.0,
+                       pred_level=0.95,
                        IV = c("D5_D20_", "D3_D20_", "D1_D20_"),
                        DV = c("Growth", "TFR", "CBR"),
                        base_size = 9, ...){
