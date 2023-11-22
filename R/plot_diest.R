@@ -134,7 +134,7 @@ plot_diest <- function(dr_data,
                     y = paste0(DV, " (", Units, ")")) +
       # Plot caption (depends on whether Ratio is higher than Ratio limit)
       {if(Ratio>=Ratio_lim)
-        ggplot2::labs(caption = paste0("Points represent the reference set of", Samples, "simulated skeletal samples.\n",
+        ggplot2::labs(caption = paste0("Points represent the reference set of ", Samples, " simulated skeletal samples.\n",
                                        "The ratio at the site is outside the limits of the reference set.\n",
                                        "Prediction may be not reliable."))
         else
