@@ -13,8 +13,14 @@
 #' and at least one out of the following three columns: \code{D1_D20_, D3_D20_, D5_D20_}
 #' (i.e., D1+/D20+, D3+/D20+, D5+/D20+ age-at-death ratios, respectively).
 #' If data frame contains total number of skeletons, its name should be n.
+#' @param samples Number of simulated reference skeletal samples to be created.
+#' @param e0_min Minimum value of life expectancy at birth in population from which skeletal samples are drawn.
+#' @param e0_max Maximum value of life expectancy at birth in population from which skeletal samples are drawn.
+#' @param growth_min Minimum value of annual growth rate in population from which skeletal samples are drawn.
+#' @param growth_max Maximum value of annual growth rate in population from which skeletal samples are drawn.
 #' @param IV Independent variable (the age-at-death ratio) used in the prediction. One or more items from \code{c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P")}.
 #' @param DV Dependent (demographic) variable to be estimated. One or more items from \code{c("All", "Growth", "TFR", "CBR")}.
+#' @param base_size Base size of fonts in the plot.
 #' @param ... Other parameters (see \code{diest})
 
 #' @return Plot of the unique regression model used in the prediction
@@ -25,17 +31,17 @@
 #' @examples
 #' # Default plot (the relationship of Growth on the D5+/D20+ ratio)
 #' BA %>%
-#' slice(12) %>%
+#' dplyr::slice(12) %>%
 #' plot_diest()
 #'
 #' # Plot of the relationship of TFR on the D5+/D20+ ratio
 #' BA %>%
-#' slice(12) %>%
+#' dplyr::slice(12) %>%
 #' plot_diest(DV="TFR")
 #'
 #' # Changing parameters of the prediction model
 #' BA %>%
-#' slice(12) %>%
+#' dplyr::slice(12) %>%
 #' plot_diest(samples=500, e0_min=25, e0_max=30)
 #' @export
 
@@ -46,7 +52,6 @@ plot_diest <- function(dr_data,
                        samples = 100,
                        e0_min = 18, e0_max = 25,
                        growth_min = -3.0, growth_max = 3.0,
-                       pred_level=0.95,
                        IV = c("D5_D20_", "D3_D20_", "D1_D20_"),
                        DV = c("Growth", "TFR", "CBR"),
                        base_size = 9, ...){
@@ -115,13 +120,13 @@ plot_diest <- function(dr_data,
                     ifelse(IV=="D3_D20_", "D3+/D20+", "D1+/D20+"))
 
     # Plot
-    ggplot2::ggplot(Ref, aes(x = x, y = y)) +
+    ggplot2::ggplot(Ref, ggplot2::aes(x = x, y = y)) +
       # Reference vertical line at the Site Ratio value
       ggplot2::geom_vline(xintercept = Ratio, linetype = 2, col = "#800000") +
-      ggplot2::geom_segment(aes(x=Ratio, xend=Ratio, y=Est, yend=Inf), col = "white") +
+      ggplot2::geom_segment(ggplot2::aes(x=Ratio, xend=Ratio, y=Est, yend=Inf), col = "white") +
       # Reference horizontal line at the predicted value
       ggplot2::geom_hline(yintercept = Est, linetype = 2, col = "#800000") +
-      ggplot2::geom_segment(aes(x=Ratio, xend=Inf, y=Est, yend=Est), col = "white") +
+      ggplot2::geom_segment(ggplot2::aes(x=Ratio, xend=Inf, y=Est, yend=Est), col = "white") +
       # Simulated reference skeletal samples
       ggplot2::geom_point(shape = 21, alpha=0.7, size=2) +
       # Regression line used for the prediction
@@ -151,7 +156,7 @@ plot_diest <- function(dr_data,
         ggplot2::scale_y_continuous(trans = scales::log_trans(), breaks = c(0, 2, 3, 4, 5, 6, 8, 10, 12))
       } +
       # Site information
-      ggplot2::geom_text(aes(x = Ratio*1.01, y = min(Ref[,"y"]),
+      ggplot2::geom_text(ggplot2::aes(x = Ratio*1.01, y = min(Ref[,"y"]),
                              label = paste0(Site,"\n", IV_lab, " = ",
                                             scales::number_format(0.01)(Ratio),
                                             "\n", DV, " = ",
@@ -159,10 +164,10 @@ plot_diest <- function(dr_data,
                                             ifelse(Units=="%",""," "), Units)),
                          hjust = 0, vjust = -0.1, size = 5/14*base_size, col = "#800000") +
       ggplot2::theme_classic() +
-      ggplot2::theme(axis.title = element_text(size = base_size),
-                     plot.title = element_text(size = base_size+1, face = "bold", hjust = 0),
-                     plot.subtitle = element_text(size = base_size, hjust = 0),
-                     plot.caption = element_text(size = base_size-1, hjust = 1))
+      ggplot2::theme(axis.title = ggplot2::element_text(size = base_size),
+                     plot.title = ggplot2::element_text(size = base_size+1, face = "bold", hjust = 0),
+                     plot.subtitle = ggplot2::element_text(size = base_size, hjust = 0),
+                     plot.caption = ggplot2::element_text(size = base_size-1, hjust = 1))
   }
 }
 

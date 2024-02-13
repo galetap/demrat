@@ -14,7 +14,7 @@
 #' @param sss If \code{TRUE}, simulated skeletal samples are created as the reference.
 #' If \code{FALSE}, reference consists from population data,
 #' the algorithm step, in which simulated skeletal samples are created, is skipped.
-#' @param samples Number of simulated skeletal samples to be created.
+#' @param samples Number of simulated reference skeletal samples to be created.
 #' @param e0_min Minimum value of life expectancy at birth in population from which skeletal samples are drawn.
 #' @param e0_max Maximum value of life expectancy at birth in population from which skeletal samples are drawn.
 #' @param growth_min Minimum value of annual growth rate in population from which skeletal samples are drawn.
@@ -57,23 +57,23 @@
 #' @examples
 #' # Demographic estimation based on the original Bocquet-Appel (2002, Table 1) data
 #' BA %>%
-#' slice(5, 12) %>%
+#' dplyr::slice(5, 12) %>%
 #' diest()
 #'
 #' # Demographic estimation based on the reconstructed Bocquet-Appel (2002) raw data
 #' BAraw %>%
 #' dr() %>%
-#' slice(1:2) %>%
+#' dplyr::slice(1:2) %>%
 #' diest()
 #'
 #' # Select predicted demographic variables and predictors that are showed in the results
 #' BA %>%
-#' slice(12) %>%
-#' diest(summary = T, IV=c("D5_D20_"), DV=c("Growth", "TFR"))
+#' dplyr::slice(12) %>%
+#' diest(summary = TRUE, IV=c("D5_D20_"), DV=c("Growth", "TFR"))
 #'
 #' # Adding extra variables
 #' BA %>%
-#' slice(5, 12) %>%
+#' dplyr::slice(5, 12) %>%
 #' diest(extra_var = c(Front, C14, dt),
 #' growth_min = -2, growth_max = 2)
 #' @export

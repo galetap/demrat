@@ -36,7 +36,7 @@
 #' dr(BAraw)
 #'
 #' BAraw %>%
-#' select(-Site) %>%
+#' dplyr::select(-Site) %>%
 #' dr()
 #' @export
 

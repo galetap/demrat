@@ -36,7 +36,7 @@ Helper function, does not show results until they are saved to an R object
 res <-
 BAraw \%>\%
 dr() \%>\%
-slice(1) \%>\%
+dplyr::slice(1) \%>\%
 diest_fn()
 
 res

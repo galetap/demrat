@@ -24,6 +24,7 @@
 #' @param growth_max Maximum value of annual growth rate in population from which skeletal samples are drawn.
 #' @param extra_var Extra variables to be joined to results (e.g. description, absolute chronology of the site).
 #' Extra variables must be in \code{dr_data} data frame.
+#' @param ... Further arguments passed to or from other functions.
 #' @return A data frame containing:
 #' @return Summary of function inputs
 #' \itemize{
@@ -64,14 +65,15 @@
 #' @examples
 #' simdr_CD()
 #'
-#' simdr_CD(sss=F)
+#' simdr_CD(sss=FALSE)
 #' @export
 
 
 # Life table simulation & skeletal samples creation / Coale and Demeny ---------------------
 simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
                      e0_min = 18, e0_max = 25,
-                     growth_min = -3.0, growth_max = 3.0, ...) {
+                     growth_min = -3.0, growth_max = 3.0,
+                     extra_var, ...) {
 
   # Set random number to obtain reproducible results
   set.seed(123456789)
@@ -186,7 +188,7 @@ simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
                   e0_max := !!e0_max,
                   Growth_min := !!growth_min*100,
                   Growth_max := !!growth_max*100) %>%
-    dplyr::mutate(D20_raw = case_when(SSS==T ~ !!D20_raw)) %>%
+    dplyr::mutate(D20_raw = dplyr::case_when(SSS==TRUE ~ !!D20_raw)) %>%
     dplyr::mutate(D0_14 = ifelse(SSS==T, n-D15_, 1-D15_),
                   D5_14=D5_-D15_,
                   D5_19=D5_-D20_,

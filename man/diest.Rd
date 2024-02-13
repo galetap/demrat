@@ -36,7 +36,7 @@ If \code{FALSE}, function returns full results including model characteristics, 
 If \code{FALSE}, reference consists from population data,
 the algorithm step, in which simulated skeletal samples are created, is skipped.}
 
-\item{samples}{Number of simulated skeletal samples to be created.}
+\item{samples}{Number of simulated reference skeletal samples to be created.}
 
 \item{e0_min}{Minimum value of life expectancy at birth in population from which skeletal samples are drawn.}
 
@@ -96,23 +96,23 @@ Function can be applied to several cemetery samples at once.
 \examples{
 # Demographic estimation based on the original Bocquet-Appel (2002, Table 1) data
 BA \%>\%
-slice(5, 12) \%>\%
+dplyr::slice(5, 12) \%>\%
 diest()
 
 # Demographic estimation based on the reconstructed Bocquet-Appel (2002) raw data
 BAraw \%>\%
 dr() \%>\%
-slice(1:2) \%>\%
+dplyr::slice(1:2) \%>\%
 diest()
 
 # Select predicted demographic variables and predictors that are showed in the results
 BA \%>\%
-slice(12) \%>\%
-diest(summary = T, IV=c("D5_D20_"), DV=c("Growth", "TFR"))
+dplyr::slice(12) \%>\%
+diest(summary = TRUE, IV=c("D5_D20_"), DV=c("Growth", "TFR"))
 
 # Adding extra variables
 BA \%>\%
-slice(5, 12) \%>\%
+dplyr::slice(5, 12) \%>\%
 diest(extra_var = c(Front, C14, dt),
 growth_min = -2, growth_max = 2)
 }

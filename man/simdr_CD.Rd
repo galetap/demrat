@@ -12,6 +12,7 @@ simdr_CD(
   e0_max = 25,
   growth_min = -3,
   growth_max = 3,
+  extra_var,
   ...
 )
 }
@@ -40,6 +41,8 @@ each simulated skeletal sample.}
 
 \item{extra_var}{Extra variables to be joined to results (e.g. description, absolute chronology of the site).
 Extra variables must be in \code{dr_data} data frame.}
+
+\item{...}{Further arguments passed to or from other functions.}
 }
 \value{
 A data frame containing:
@@ -93,6 +96,6 @@ All three steps are iterated many times (see \code{samples}) to obtain the refer
 \examples{
 simdr_CD()
 
-simdr_CD(sss=F)
+simdr_CD(sss=FALSE)
 }
 \keyword{simulation}

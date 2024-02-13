@@ -42,3 +42,6 @@
 #'   \item{Age_min}{Age_max, Upper limit of age-at-death interval. Note that the value of 20, for example, means that an individual died just before her/his 20th birthday, i.e. up to 19.9 years of age}
 #' }
 "BAraw"
+
+#' Siler coefficients for Coale and Demeny (1983) life tables
+"W_coef_Est"

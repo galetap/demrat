@@ -50,7 +50,7 @@ D5-19/D5+ aka P index, and D0-14/D0+) for skeletal sample(s).
 dr(BAraw)
 
 BAraw \%>\%
-select(-Site) \%>\%
+dplyr::select(-Site) \%>\%
 dr()
 }
 \keyword{age-at-death}

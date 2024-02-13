@@ -21,7 +21,7 @@
 #' res <-
 #' BAraw %>%
 #' dr() %>%
-#' slice(1) %>%
+#' dplyr::slice(1) %>%
 #' diest_fn()
 #'
 #' res

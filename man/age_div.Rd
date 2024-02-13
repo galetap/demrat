@@ -4,7 +4,7 @@
 \alias{age_div}
 \title{Divides an individual into parts}
 \usage{
-age_div(data, show_res = F, extra_var = NULL)
+age_div(data, show_res = FALSE, extra_var = NULL)
 }
 \arguments{
 \item{data}{A data frame with individuals' age-at-death estimations.
@@ -37,7 +37,7 @@ Proportionally splits an individual into 100 age-at-death categories (0-99 years
 on the basis of the estimation of its age-at-death.
 }
 \examples{
-age_div(BAraw, show_res = T) \%>\%
-as_tibble()
+age_div(BAraw, show_res = TRUE) \%>\%
+tibble::as_tibble()
 }
 \keyword{age-at-death}

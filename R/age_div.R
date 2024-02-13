@@ -23,14 +23,14 @@
 #' }
 #' @keywords age-at-death
 #' @examples
-#' age_div(BAraw, show_res = T) %>%
-#' as_tibble()
+#' age_div(BAraw, show_res = TRUE) %>%
+#' tibble::as_tibble()
 #' @export
 
 # Divide individuals into 0-99 age categories / function ---------------------------
 # Columns must be named as "Site", "Culture", "Age_min" and "Age_max"
 
-age_div <- function(data, show_res = F, extra_var=NULL) {
+age_div <- function(data, show_res = FALSE, extra_var=NULL) {
   if(length(dplyr::intersect(c("Age_min", "Age_max"), colnames(data)))!=2){
     message("Dataframe must contain columns Age_min and Age_max")
   }
@@ -87,7 +87,7 @@ data <-
     dplyr::left_join(data, ., by = c("Age_min", "Age_max")) %>%
     as.data.frame()
 
-  if(show_res == T) {
+  if(show_res == TRUE) {
     return(res)
   }
   else {

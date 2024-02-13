@@ -11,7 +11,6 @@ plot_diest(
   e0_max = 25,
   growth_min = -3,
   growth_max = 3,
-  pred_level = 0.95,
   IV = c("D5_D20_", "D3_D20_", "D1_D20_"),
   DV = c("Growth", "TFR", "CBR"),
   base_size = 9,
@@ -26,9 +25,21 @@ and at least one out of the following three columns: \code{D1_D20_, D3_D20_, D5_
 (i.e., D1+/D20+, D3+/D20+, D5+/D20+ age-at-death ratios, respectively).
 If data frame contains total number of skeletons, its name should be n.}
 
+\item{samples}{Number of simulated reference skeletal samples to be created.}
+
+\item{e0_min}{Minimum value of life expectancy at birth in population from which skeletal samples are drawn.}
+
+\item{e0_max}{Maximum value of life expectancy at birth in population from which skeletal samples are drawn.}
+
+\item{growth_min}{Minimum value of annual growth rate in population from which skeletal samples are drawn.}
+
+\item{growth_max}{Maximum value of annual growth rate in population from which skeletal samples are drawn.}
+
 \item{IV}{Independent variable (the age-at-death ratio) used in the prediction. One or more items from \code{c("All", "D5_D20_", "D3_D20_", "D1_D20_", "P")}.}
 
 \item{DV}{Dependent (demographic) variable to be estimated. One or more items from \code{c("All", "Growth", "TFR", "CBR")}.}
+
+\item{base_size}{Base size of fonts in the plot.}
 
 \item{...}{Other parameters (see \code{diest})}
 }
@@ -48,17 +59,17 @@ Function can be applied to a single skeletal sample only.
 \examples{
 # Default plot (the relationship of Growth on the D5+/D20+ ratio)
 BA \%>\%
-slice(12) \%>\%
+dplyr::slice(12) \%>\%
 plot_diest()
 
 # Plot of the relationship of TFR on the D5+/D20+ ratio
 BA \%>\%
-slice(12) \%>\%
+dplyr::slice(12) \%>\%
 plot_diest(DV="TFR")
 
 # Changing parameters of the prediction model
 BA \%>\%
-slice(12) \%>\%
+dplyr::slice(12) \%>\%
 plot_diest(samples=500, e0_min=25, e0_max=30)
 }
 \keyword{demographic}
