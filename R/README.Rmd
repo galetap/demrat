@@ -1,0 +1,276 @@
+---
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+demrat
+=======
+
+Provides a framework for estimating demographic rates (growth, crude birth, and total fertility rate) of a population represented by a skeletal sample(s) using age-at-death ratios. 
+
+The methodology accounts for the effect of stochastic variation in small skeletal samples and allows to set a reference mortality pattern appropriate for the time period being studied.
+
+
+Installation and loading
+------------------------
+
+-   Install the latest developmental version from
+    [GitHub](https://github.com/galetap/demrat) as follow:
+
+```{r installation, eval = FALSE}
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("galetap/demrat")
+```
+
+-   Loading package
+
+```{r loading_package}
+library(demrat)  
+```
+
+
+Data
+------------------------
+
+The functions of the package accept data in two formats; summary data and raw data format. 
+
+Two built-in datasets are available: `BA` (summary data format) and `BAraw` (raw data format). Both datasets are adopted from Bocquet-Appel (2002), Table 1 (https://doi.org/10.1086/342429). 
+
+
+**Summary data format**
+
+The rows of the summary data format contain data for one skeletal sample. Data must have at least four variables. 
+
+1. Site
+2. Culture
+3. D20_ (i.e., D20+, number of adult skeletons in a sample)
+4. One out of the following three age-at-death ratios: D1_D20_, D3_D20_, D5_D20_ (i.e., D1+/D20+, D3+/D20+, D5+/D20+ ratios, respectively).
+
+The column with the total number of skeletons in a sample (named n) is recommended. 
+
+```{r Summary_format}
+tibble(Site = c("Site A", "Site B", "Site C"),
+       Culture = c("Culture 1", "Culture 1", "Culture 2"),
+       D20_ = c(25, 96, 55),
+       D5_D20_ = c(1.61, 1.37, 1.27),
+       n = c(50, 141, 72))
+```
+
+*`BA` dataset*
+
+Summary format of Bocquet-Appel's (2002) dataset. 
+
+Each row contains data from a single skeletal sample. 
+
+Variables include Site and Culture name, absolute chronology of the Site, number of skeletons in various age-at-death categories, and age-at-death ratio values.   
+
+```{r Dataset_BA}
+BA
+# For column description, run help(BA).
+```
+
+
+**Raw data format**
+
+The rows of the raw data format contain data for one skeleton. Data must contain at least four variables. 
+
+1. Site
+2. Culture
+3. Age_min; lower limit of the age-at-death estimate of a skeleton
+4. Age_max; upper limit of the age-at-death estimate of a skeleton
+
+Note that the age-at.death intervals are closed on the left and open on the right.
+It is, interval from 20 to 40 means that individual died between 20 and 39.9 years of age.  
+
+```{r Raw_format}
+# First 10 rows only
+tibble(Site = rep("Site A", 10),
+       Culture = rep("Culture 1", 10),
+       Age_min = c(20, 0, 40, 3, 9, 20, 1, 20, 19, 60),
+       Age_max = c(40, 1, 60, 5, 12, 39, 2, 100, 21, 100))
+```
+
+*`BAraw` dataset*
+
+
+Raw format of Bocquet-Appel's (2002) dataset. 
+
+```{r Dataset_BAraw}
+BAraw
+# For column description, run help(BAraw).
+```
+
+
+Key functions
+-------------
+
+#### `dr`: Translate raw to summary data format
+
+Based on the raw data format, the function calculates 
+
+* number of skeletons in several age-at-death groups (e.g., D1+, D20+) and 
+* six demographic ratios (D1+/D20+, D3+/D20+, D5+/D20+, D5-14/D20+ aka juvenility index, D5-19/D5+ aka P index, and D0-14/D0+) by Site and Culture.
+
+The function can be applied for one or more Sites. 
+
+```{r dr}
+dr(BAraw)
+```
+
+
+#### `diest`: Estimates demographic rates for skeletal sample(s)
+
+`diest` function estimates growth, crude birth, and total fertility rates based on age-at-death ratios (e.g., D5+/D20+) by Site and Culture. The function accepts data in the summary format. 
+
+The function can be applied for one or more Sites. 
+
+Estimation for sites with a large number of skeletons and/or estimation for many sites can be slow. 
+
+**`diest` with default settings based on summary data format**
+
+By default, the prediction model is based on the reference set of 100 simulated reference skeletal samples 
+
+* that have the same number of adult skeletons (D20+) as the real skeletal sample under study
+* that are drawn from reference populations with life expectancies between 18 and 25 years and subjected to an annual growth between −3 and 3% per annum.
+
+```{r diest_summary_format}
+BA %>%
+  # Subset two sites only
+  slice(12, 24) %>%
+  # Predict demographic rates
+  diest()
+```
+
+**`diest` with user defined settings of demographic regime of reference populations**
+
+A demographoc regime (mortality level and annual growth) of a population from which reference skeletal samples are drawn can be set by the user (run `help(diest)`).
+
+```{r diest_set}
+BA %>%
+  slice(12) %>%
+  diest(samples = 200, e0_min = 25, e0_max = 30)
+```
+
+
+**`diest` with subsettings dependent and independent variables**
+
+By setting the `IV` and `DV` arguments, a subset of results can be displayed.
+
+```{r diest_filter}
+BA %>%
+  slice(12) %>%
+  diest(IV="D5_D20_", DV = "TFR")
+```
+
+
+**`diest` with full prediction results**
+
+Full results of the prediction can be obtained by setting `summary=F`.
+
+```{r diest_full}
+BA %>%
+  slice(12) %>%
+  diest(summary=F)
+```
+
+
+And further analyzed by `unnest()`.
+
+```{r diest_full_unnest}
+BA %>%
+  slice(12) %>%
+  diest(summary=F) %>% 
+  unnest(DIest)
+```
+
+
+**`diest` based on raw data format**
+
+Raw data format must be converted to summary data format before using `diest`.
+
+```{r diest_raw_format}
+BAraw %>%
+  # Convert raw to summary data format (compute demographic ratios)
+  dr() %>% 
+  # Select data for two sites
+  slice(12, 24) %>%
+  # Predict demographic variables
+  diest()
+```
+
+
+#### `plot_diest`: Plots prediction model and estimation for a selected site
+
+The function visualizes the prediction model. The plot has an age-at-death ratio (independent variable) on the X axis and a demographic variable (dependent variable) on the Y axis. The scatter shows the reference set of simulated skeletal samples (points), regression line used for a prediction, and the age-at-death ratio and predicted variable for a given Site. 
+
+The function accepts data in the summary format.
+
+The age-at-death ratio (D5+/D20+ as default), estimated demographic variable (Growth as default), and demographic pattern of reference populations (see diest() for defaults) can be set by the user.  
+
+The function can be applied for one Site only. 
+
+**`plot_diest` with default settings**
+
+```{r plot_diest_default}
+BA %>%
+slice(12) %>%
+plot_diest()
+```
+
+
+**`plot_diest` with user-defined settings**
+
+```{r plot_diest_user}
+BA %>%
+slice(12) %>%
+plot_diest(DV = "TFR", samples=500, e0_min=25, e0_max=30)
+```
+
+
+#### `simdr_CD`: Creates a reference set of simulated skeletal samples
+
+`simdr_CD` is a helper function that creates a reference set of skeletal samples drawn from Coale and Demeny (1983) set of model life tables. Each row contains one simulated skeletal sample. For parameters description, run `help(simdr_CD)`.
+
+**`simdr_CD` with default settings**
+
+```{r simdr_CD_default}
+# Simulation based on the default settings 
+simdr_CD() %>% 
+  as_tibble()
+```
+
+
+**`simdr_CD` with user-defined settings**
+
+```{r simdr_CD_user}
+simdr_CD(samples = 200, D20_raw = 20, e0_min = 30, e0_max = 40) %>% 
+  as_tibble()
+```
+
+
+**Using `simdr_CD` to study a relationship between demographic variables**
+
+Since `simdr_CD` generates reference skeletal samples or populations with various life expectancies at birth and annual growth rates, it can be used to depict a relationship between demographic variables.
+
+```{r simdr_CD_TFR_Growth, fig.width=5, fig.height=4}
+simdr_CD() %>% 
+  ggplot(aes(x = TFR, y = Growth)) + 
+  geom_point() + 
+  labs(title = "Relationship between TFR and annual growth rate(%)",
+       subtitle = "Assuming a life expectancy at birth between 20 and 30 years\nand 50 adult deaths in each skeletal sample") + 
+  scale_x_continuous(breaks = seq(0, 20, 1)) + 
+  theme_classic() + 
+  theme(axis.title = element_text(size = 8),
+        plot.title = element_text(size = 10, face = "bold"),
+        plot.subtitle = element_text(size = 9))
+```
+
+  
+
+```{r}
+
+
+```
