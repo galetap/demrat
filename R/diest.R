@@ -100,33 +100,33 @@ diest <- function(dr_data, summary=T, pred_level=0.95,
     message("Input data frame must contain columns Site, Culture, D20_ and at least one out of the following three columns: D1_D20_, D3_D20_, D5_D20_ (see help(diest)).")
   else {
     dr_data %>%
-      tidyr::nest(dr_data=-c(Site, Culture)) %>%
-      dplyr::mutate(
-        DIest = purrr::map(dr_data,
-                           function(.x, glanced=F, ...)
-                             diest_fn(dr_data=.x, sss=sss,
-                                      samples = samples,
-                                      e0_min = e0_min, e0_max = e0_max,
-                                      growth_min = growth_min, growth_max = growth_max,
-                                      extra_var={{extra_var}}, ...), ...)) %>%
+      nest(dr_data=-c(Site, Culture)) %>%
+      mutate(
+        DIest = map(dr_data,
+                    function(.x, glanced=F, ...)
+                      diest_fn(dr_data=.x, sss=sss,
+                               samples = samples,
+                               e0_min = e0_min, e0_max = e0_max,
+                               growth_min = growth_min, growth_max = growth_max,
+                               extra_var={{extra_var}}, ...), ...)) %>%
       mutate(DIest=map(.x = DIest,
                        .f = ~dplyr::select(.x, -Site, -Culture,
                                            -Data_pred, -Formula, -Model))) %>%
       {if(summary)
-        tidyr::unnest(., DIest) %>%
-          tidyr::unnest(Glance, keep_empty = TRUE) %>%
-          dplyr::select(Site, Culture, {{extra_var}}, DV, IV, Est, Lwr, Upr, Ratio_eval) %>%
+        unnest(., DIest) %>%
+          unnest(Glance, keep_empty = TRUE) %>%
+          select(Site, Culture, {{extra_var}}, DV, IV, Est, Lwr, Upr, Ratio_eval) %>%
           # Filter only selected DV/demographoc indicators
           {if("All" %in% {{DV}})
             .
             else
-              dplyr::filter(., DV %in% {{DV}})
+              filter(., DV %in% {{DV}})
           } %>%
           # Filter only selected IV/predictors
           {if("All" %in% {{IV}})
             .
             else
-              dplyr::filter(., IV %in% {{IV}})
+              filter(., IV %in% {{IV}})
           }
         else .
       }

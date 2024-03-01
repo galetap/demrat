@@ -9,8 +9,8 @@ age_div(data, show_res = FALSE, extra_var = NULL)
 \arguments{
 \item{data}{A data frame with individuals' age-at-death estimations.
 Data frame must contain at least two columns:
-\code{Age_min}, lower limit of age-at-death interval;
-\code{Age_max}, upper limit of age-at-death interval.
+\code{Age_min}, lower limit of age-at-death interval, must be a numeric variable;
+\code{Age_max}, upper limit of age-at-death interval, must be a numeric variable.
 For example, the value of 20 means that an individual died
 before her/his 20th birthday, i.e. up to 19.9 years of age.
 Two other columns are expected (\code{Site} and \code{Culture}), but they are not required.}

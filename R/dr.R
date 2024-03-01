@@ -6,8 +6,8 @@
 #' D5-19/D5+ aka P index, and D0-14/D0+) for skeletal sample(s).
 #' @param data A data frame with individuals' age-at-death estimations.
 #' Data frame must contain at least two columns:
-#' \code{Age_min}, Lower limit of age-at-death interval;
-#' \code{Age_max}, Upper limit of age-at-death interval.
+#' \code{Age_min}, Lower limit of age-at-death interval, must be a numeric variable;
+#' \code{Age_max}, Upper limit of age-at-death interval, must be a numeric variable.
 #' The interval is right-open. The value of 20 years means that an individual died
 #' before her/his 20th birthday, i.e. up to 19.9 years of age.
 #' Two other columns are expected (\code{Site} and \code{Culture}), but they are not required.
@@ -56,9 +56,9 @@ dr <- function(data, extra_var=NULL) {
   res <-
     data %>%
     demrat::age_div() %>%
-    dplyr::select(Site, Culture, starts_with("A_")) %>%
+    dplyr::select(Site, Culture, tidyselect::starts_with("A_")) %>%
     dplyr::group_by(Site, Culture) %>%
-    dplyr::summarise(across(.cols = starts_with("A_"),
+    dplyr::summarise(across(.cols = tidyselect::starts_with("A_"),
                             .fns = sum)) %>% #sum of all A_ columns by categories
     dplyr::ungroup() %>%
     dplyr::mutate(n = base::rowSums(.[,paste("A_", 0:99, sep = "")]), #0:99 are age-at-death not column number
@@ -71,7 +71,7 @@ dr <- function(data, extra_var=NULL) {
                   D5_14 = base::rowSums(.[,paste("A_", 5:14, sep = "")]),
                   D5_19 = base::rowSums(.[,paste("A_", 5:19, sep = "")]),
                   D20_ = base::rowSums(.[,paste("A_", 20:99, sep = "")])) %>%
-    dplyr::select(-starts_with("A_")) %>%
+    dplyr::select(-tidyselect::starts_with("A_")) %>%
     dplyr::mutate(D1_D20_ = D1_/D20_, #Galeta 2010
                   D3_D20_ = D3_/D20_, #Galeta 2010
                   D5_D20_ = D5_/D20_, #Galeta 2010

@@ -181,7 +181,7 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
                     purrr::pmap_chr(list(IV, Data_pred, Ratio_lim),
                                     function(IV, Data_pred, Ratio_lim)
                                     {ifelse(Data_pred %>%
-                                              dplyr::select(all_of(IV)) %>%
+                                              dplyr::select(tidyselect::all_of(IV)) %>%
                                               dplyr::pull() >
                                               Ratio_lim,
                                             "Out of limits", "Normal")})) %>%

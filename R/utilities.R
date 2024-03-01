@@ -15,13 +15,15 @@
 
 #' @importFrom stats runif predict qt
 
-#' @importFrom tidyselect everything
+#' @importFrom tidyselect everything where
 
-#' @importFrom utils write.table
+#' @importFrom utils write.table globalVariables
 
 #' @importFrom tidyr drop_na nest unnest
 
 #' @importFrom ggplot2 theme_set
+
+#' @importFrom rlang .data
 
 #' @keywords internal
 "_PACKAGE"
