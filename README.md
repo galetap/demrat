@@ -9,6 +9,15 @@ The methodology accounts for the effect of stochastic variation in small
 skeletal samples and allows to set a reference mortality pattern
 appropriate for the time period being studied.
 
+## Shiny web application
+
+[Shiny app for the `demrat`
+package](https://galetap.shinyapps.io/demrat/) enables to deploy
+demographic predictions using `demrat` with a point-and-click interface.
+The Shiny app is useful for non-R users or for those who want to
+experiment with the `demrat` package before downloading it and without
+having to read through the documentation below.
+
 ## Installation and loading
 
 - Install the latest developmental version from
@@ -19,10 +28,12 @@ if(!require(devtools)) install.packages("devtools")
 devtools::install_github("galetap/demrat")
 ```
 
-- Loading package
+- Loading package(s)
 
 ``` r
-library(demrat)  
+library(demrat)
+# The examples below use the `tidyverse` package. If installed, load it by running:
+library(tidyverse)
 ```
 
 ## Data

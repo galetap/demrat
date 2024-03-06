@@ -110,7 +110,7 @@ diest <- function(dr_data, summary=T, pred_level=0.95,
                                growth_min = growth_min, growth_max = growth_max,
                                extra_var={{extra_var}}, ...), ...)) %>%
       mutate(DIest=map(.x = DIest,
-                       .f = ~dplyr::select(.x, -Site, -Culture,
+                       .f = ~select(.x, -Site, -Culture,
                                            -Data_pred, -Formula, -Model))) %>%
       {if(summary)
         unnest(., DIest) %>%
