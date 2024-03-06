@@ -18,7 +18,7 @@ The Shiny app is useful for non-R users or for those who want to
 experiment with the `demrat` package before downloading it and without
 having to read through the documentation below.
 
-## Installation and loading
+## Installation and loading the demrat package
 
 - Install the latest developmental version from
   [GitHub](https://github.com/galetap/demrat) as follow:

@@ -19,7 +19,7 @@ Shiny web application
 
 [Shiny app for the `demrat` package](https://galetap.shinyapps.io/demrat/) enables to deploy demographic predictions using `demrat` with a point-and-click interface. The Shiny app is useful for non-R users or for those who want to experiment with the `demrat` package before downloading it and without having to read through the documentation below.
 
-Installation and loading
+Installation and loading the demrat package
 ------------------------
 
 -   Install the latest developmental version from
