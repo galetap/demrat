@@ -50,37 +50,37 @@ dr <- function(data, extra_var=NULL) {
   extra_var_sel <-
     data %>%
     age_div(extra_var={{extra_var}}) %>%
-    dplyr::select(Site, Culture, {{extra_var}}) %>%
-    dplyr::distinct()
+    select(Site, Culture, {{extra_var}}) %>%
+    distinct()
 
   res <-
     data %>%
-    demrat::age_div() %>%
-    dplyr::select(Site, Culture, tidyselect::starts_with("A_")) %>%
-    dplyr::group_by(Site, Culture) %>%
-    dplyr::summarise(across(.cols = tidyselect::starts_with("A_"),
-                            .fns = sum)) %>% #sum of all A_ columns by categories
-    dplyr::ungroup() %>%
-    dplyr::mutate(n = base::rowSums(.[,paste("A_", 0:99, sep = "")]), #0:99 are age-at-death not column number
-                  D0 = base::rowSums(.[,paste("A_", 0, sep = "")]),
-                  D1_ = base::rowSums(.[,paste("A_", 1:99, sep = "")]),
-                  D3_ = base::rowSums(.[,paste("A_", 3:99, sep = "")]),
-                  D5_ = base::rowSums(.[,paste("A_", 5:99, sep = "")]),
-                  D15_ = base::rowSums(.[,paste("A_", 15:99, sep = "")]),
-                  D0_14 = base::rowSums(.[,paste("A_", 0:14, sep = "")]),
-                  D5_14 = base::rowSums(.[,paste("A_", 5:14, sep = "")]),
-                  D5_19 = base::rowSums(.[,paste("A_", 5:19, sep = "")]),
-                  D20_ = base::rowSums(.[,paste("A_", 20:99, sep = "")])) %>%
-    dplyr::select(-tidyselect::starts_with("A_")) %>%
-    dplyr::mutate(D1_D20_ = D1_/D20_, #Galeta 2010
-                  D3_D20_ = D3_/D20_, #Galeta 2010
-                  D5_D20_ = D5_/D20_, #Galeta 2010
-                  JI = D5_14/D20_, #Bocquet-Appel, Masset 1983
-                  P = D5_19/D5_, #Bocquet-Appel, 2002
-                  D0_14_D0_ = D0_14/n) %>%  #McFadden et al. 2018
+    age_div() %>%
+    select(Site, Culture, starts_with("A_")) %>%
+    group_by(Site, Culture) %>%
+    summarise(across(.cols = starts_with("A_"),
+                     .fns = sum)) %>% #sum of all A_ columns by categories
+    ungroup() %>%
+    mutate(n = rowSums(.[,paste("A_", 0:99, sep = "")]), #0:99 are age-at-death not column number
+           D0 = rowSums(.[,paste("A_", 0, sep = "")]),
+           D1_ = rowSums(.[,paste("A_", 1:99, sep = "")]),
+           D3_ = rowSums(.[,paste("A_", 3:99, sep = "")]),
+           D5_ = rowSums(.[,paste("A_", 5:99, sep = "")]),
+           D15_ = rowSums(.[,paste("A_", 15:99, sep = "")]),
+           D0_14 = rowSums(.[,paste("A_", 0:14, sep = "")]),
+           D5_14 = rowSums(.[,paste("A_", 5:14, sep = "")]),
+           D5_19 = rowSums(.[,paste("A_", 5:19, sep = "")]),
+           D20_ = rowSums(.[,paste("A_", 20:99, sep = "")])) %>%
+    select(-starts_with("A_")) %>%
+    mutate(D1_D20_ = D1_/D20_, #Galeta 2010
+           D3_D20_ = D3_/D20_, #Galeta 2010
+           D5_D20_ = D5_/D20_, #Galeta 2010
+           JI = D5_14/D20_, #Bocquet-Appel, Masset 1983
+           P = D5_19/D5_, #Bocquet-Appel, 2002
+           D0_14_D0_ = D0_14/n) %>%  #McFadden et al. 2018
     # Add extra_var columns
-    dplyr::left_join(extra_var_sel, by=c("Site", "Culture")) %>%
-    dplyr::select(Site, Culture, {{extra_var}}, everything())
+    left_join(extra_var_sel, by=c("Site", "Culture")) %>%
+    select(Site, Culture, {{extra_var}}, everything())
 
   # utils::write.table(res,
   #                    "clipboard", sep="\t", dec = ",", col.names = NA)

@@ -41,7 +41,7 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
   # Rid off columns where all values are NAs
   site =
     site %>%
-    dplyr::select(where(~sum(!is.na(.x)) > 0))
+    select(where(~sum(!is.na(.x)) > 0))
 
   # Does dataframe have only one row?
   if(nrow(site)!=1)
@@ -78,117 +78,117 @@ diest_fn <- function(dr_data, glanced = F, pred_level = 0.95, extra_var, ...){
 
   # Results
   res <-
-    tibble::tibble(DV=c(rep("TFR", 3), rep("CBR", 3), rep("Growth", 3)),
-                   IV=c("D5_D20_", "D3_D20_", "D1_D20_",
-                        "D5_D20_", "D3_D20_", "D1_D20_",
-                        "D5_D20_", "D3_D20_", "D1_D20_"),
-                   # Regression formulas used to DI estimation
-                   Formula = c(log(TFR) ~ s(D5_D20_, bs="cs"),
-                               log(TFR) ~ s(D3_D20_, bs="cs"),
-                               log(TFR) ~ s(D1_D20_, bs="cs"),
-                               CBR ~ s(log(D5_D20_), bs="cs"),
-                               CBR ~ s(log(D3_D20_), bs="cs"),
-                               CBR ~ s(log(D1_D20_), bs="cs"),
-                               Growth ~ s(log(D5_D20_), bs="cs"),
-                               Growth ~ s(log(D3_D20_), bs="cs"),
-                               Growth ~ s(log(D1_D20_), bs="cs"))) %>%
+    tibble(DV=c(rep("TFR", 3), rep("CBR", 3), rep("Growth", 3)),
+           IV=c("D5_D20_", "D3_D20_", "D1_D20_",
+                "D5_D20_", "D3_D20_", "D1_D20_",
+                "D5_D20_", "D3_D20_", "D1_D20_"),
+           # Regression formulas used to DI estimation
+           Formula = c(log(TFR) ~ s(D5_D20_, bs="cs"),
+                       log(TFR) ~ s(D3_D20_, bs="cs"),
+                       log(TFR) ~ s(D1_D20_, bs="cs"),
+                       CBR ~ s(log(D5_D20_), bs="cs"),
+                       CBR ~ s(log(D3_D20_), bs="cs"),
+                       CBR ~ s(log(D1_D20_), bs="cs"),
+                       Growth ~ s(log(D5_D20_), bs="cs"),
+                       Growth ~ s(log(D3_D20_), bs="cs"),
+                       Growth ~ s(log(D1_D20_), bs="cs"))) %>%
 
     # Filter only those DVs that are inlcuded in dataframe
-    dplyr::filter(IV %in% dplyr::intersect(c("D5_D20_", "D3_D20_", "D1_D20_"),
-                                           names(site))) %>%
+    filter(IV %in% intersect(c("D5_D20_", "D3_D20_", "D1_D20_"),
+                             names(site))) %>%
 
     # Column with reference sample data (same for all lm models)
-    dplyr::mutate(Ref=list(ref)) %>%
+    mutate(Ref=list(ref)) %>%
 
     # gam models and its characteristics (Glance)
-    dplyr::mutate(Model = purrr::map2(Formula, Ref,
-                                      ~mgcv::gam(formula = .x, method="REML", data = .y))) %>%
+    mutate(Model = map2(Formula, Ref,
+                        ~gam(formula = .x, method="REML", data = .y))) %>%
 
     # Glance gam model / handy calculation by PG, no official glance() for gam model
-    dplyr::mutate(Glance = purrr::map(.x = Model,
-                                      .f = ~tibble::tibble(adj.r.squared = summary(.x)$r.sq,
-                                                           sigma = sqrt(summary(.x)$scale),
-                                                           statistic = summary(.x)$s.table[3],
-                                                           p.value = summary(.x)$s.table[4],
-                                                           df.res = broom::glance(.x)$df.residual,
-                                                           AIC = broom::glance(.x)$AIC,
-                                                           BIC = broom::glance(.x)$BIC,
-                                                           deviance = broom::glance(.x)$deviance,
-                                                           deviance_expl = summary(.x)$dev.expl))) %>%
+    mutate(Glance = map(.x = Model,
+                        .f = ~tibble(adj.r.squared = summary(.x)$r.sq,
+                                     sigma = sqrt(summary(.x)$scale),
+                                     statistic = summary(.x)$s.table[3],
+                                     p.value = summary(.x)$s.table[4],
+                                     df.res = glance(.x)$df.residual,
+                                     AIC = glance(.x)$AIC,
+                                     BIC = glance(.x)$BIC,
+                                     deviance = glance(.x)$deviance,
+                                     deviance_expl = summary(.x)$dev.expl))) %>%
 
     # Data for prediction (copy od site argument)
-    dplyr::mutate(Data_pred = list(site)) %>%
+    mutate(Data_pred = list(site)) %>%
 
     # Prediction for site
     # Fit a se.fit
-    dplyr::mutate(Pred = purrr::map2(Model, Data_pred,
-                                     ~stats::predict(.x, newdata = .y, se=T) %>% tibble::as_tibble())) %>%
+    mutate(Pred = map2(Model, Data_pred,
+                       ~predict(.x, newdata = .y, se=T) %>% as_tibble())) %>%
     # SEE a df
-    dplyr::mutate(Pred = purrr::map2(.x = Pred, .y = Glance,
-                                     .f = ~.x %>% dplyr::mutate(sigma=.y$sigma,
-                                                                df.res=.y$df.res))) %>%
+    mutate(Pred = map2(.x = Pred, .y = Glance,
+                       .f = ~.x %>% mutate(sigma=.y$sigma,
+                                           df.res=.y$df.res))) %>%
     # Margin of prediction, Lwr, Upr
-    dplyr::mutate(Pred = purrr::map(.x = Pred,
-                                    .f = ~.x %>%
-                                      dplyr::mutate(pred.margin= sqrt(se.fit^2 + sigma^2)*
-                                                      stats::qt(pred_level+(1-pred_level)/2, df.res)) %>%
-                                      dplyr::mutate(Lwr=fit-pred.margin,
-                                                    Upr=fit+pred.margin))) %>%
+    mutate(Pred = map(.x = Pred,
+                      .f = ~.x %>%
+                        mutate(pred.margin= sqrt(se.fit^2 + sigma^2)*
+                                 qt(pred_level+(1-pred_level)/2, df.res)) %>%
+                        mutate(Lwr=fit-pred.margin,
+                               Upr=fit+pred.margin))) %>%
     # Rename, select
-    dplyr::mutate(Pred = purrr::map(.x = Pred,
-                                    .f = ~.x %>%
-                                      dplyr::rename(Est=fit) %>%
-                                      dplyr::select(Est, Lwr, Upr))) %>%
+    mutate(Pred = purrr::map(.x = Pred,
+                             .f = ~.x %>%
+                               rename(Est=fit) %>%
+                               select(Est, Lwr, Upr))) %>%
 
     # Back transformation of prediction (for TFR only)
-    dplyr::mutate(Pred = ifelse(DV=="TFR", purrr::map(Pred, exp), Pred)) %>%
+    mutate(Pred = ifelse(DV=="TFR", map(Pred, exp), Pred)) %>%
 
     # Nest or unnest Glance column
     {if (glanced)
-      tidyr::unnest(., c(Pred, Glance))
+      unnest(., c(Pred, Glance))
       else
-        tidyr::unnest(., Pred)
+        unnest(., Pred)
     } %>%
 
     # Add estimation based on Bocquet-Appel 2002 regression formula
     {if("P" %in% names(site))
-      dplyr::bind_rows(., list(DV="CBR", IV="P",
-                               Ref=list(ref), Data_pred = list(site),
-                               Est=1000*as.double(0.00375 + 0.15334*(site$P^0.89074)))) %>%
-        dplyr::bind_rows(list(DV="Growth", IV="P",
-                               Ref=list(ref), Data_pred = list(site),
-                              Est=100*as.double(-0.05389 + 0.12555*(site$P^0.47788))))
+      bind_rows(., list(DV="CBR", IV="P",
+                        Ref=list(ref), Data_pred = list(site),
+                        Est=1000*as.double(0.00375 + 0.15334*(site$P^0.89074)))) %>%
+        bind_rows(list(DV="Growth", IV="P",
+                       Ref=list(ref), Data_pred = list(site),
+                       Est=100*as.double(-0.05389 + 0.12555*(site$P^0.47788))))
       else  .
     } %>%
 
     # Compute 97.5% limit of the ratios in the reference samples
-    dplyr::mutate(Ratio_lim = purrr::map(.x = Ref,
-                                         .f = ~ .x %>%
-                                           dplyr::select(D1_D20_, D3_D20_, D5_D20_, P) %>%
-                                           dplyr::summarise(across(.cols = everything(),
-                                                                   .fns = ~quantile(., probs=0.975))) %>%
-                                           tidyr::pivot_longer(cols = everything(),
-                                                        names_to = "Ratio", values_to = "U_lim"))) %>%
+    mutate(Ratio_lim = map(.x = Ref,
+                           .f = ~ .x %>%
+                             select(D1_D20_, D3_D20_, D5_D20_, P) %>%
+                             summarise(across(.cols = everything(),
+                                              .fns = ~quantile(., probs=0.975))) %>%
+                             pivot_longer(cols = everything(),
+                                          names_to = "Ratio", values_to = "U_lim"))) %>%
     # Filter the limit for IV used in the particular row only
-    dplyr::mutate(Ratio_lim = purrr::map2_dbl(.x = Ratio_lim, .y = IV,
+    mutate(Ratio_lim = map2_dbl(.x = Ratio_lim, .y = IV,
                                 .f = ~ .x %>%
-                                  dplyr::filter(Ratio==.y) %>%
-                                  dplyr::select(U_lim) %>%
-                                  dplyr::pull())) %>%
+                                  filter(Ratio==.y) %>%
+                                  select(U_lim) %>%
+                                  pull())) %>%
 
     # Is the ratio higher than its 97.5% limit of the set of reference samples?
-    dplyr::mutate(Ratio_eval =
-                    purrr::pmap_chr(list(IV, Data_pred, Ratio_lim),
-                                    function(IV, Data_pred, Ratio_lim)
-                                    {ifelse(Data_pred %>%
-                                              dplyr::select(tidyselect::all_of(IV)) %>%
-                                              dplyr::pull() >
-                                              Ratio_lim,
-                                            "Out of limits", "Normal")})) %>%
+    mutate(Ratio_eval =
+             pmap_chr(list(IV, Data_pred, Ratio_lim),
+                      function(IV, Data_pred, Ratio_lim)
+                      {ifelse(Data_pred %>%
+                                select(tidyselect::all_of(IV)) %>%
+                                pull() >
+                                Ratio_lim,
+                              "Out of limits", "Normal")})) %>%
 
     # Round results (avoid scientific format)
-    dplyr::mutate(dplyr::across(Est:Upr, ~round(.x, 4))) %>%
+    mutate(dplyr::across(Est:Upr, ~round(.x, 4))) %>%
     add_column(extra_var_sel, .before = 1)
 
-    invisible(res)
+  invisible(res)
 }

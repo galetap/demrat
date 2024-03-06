@@ -88,24 +88,24 @@ simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
   # Standard life tables / Coale and Demeny West Model
   LTs <-
     W_coef_Est %>%
-    dplyr::filter(e0>=e0_min,
-                  e0<=e0_max) %>%
-    tibble::as_tibble() %>%
-    dplyr::mutate(LT=list(tibble(Age=0:100))) %>%
-    dplyr::mutate(LT=purrr::pmap(list(LT, a1, b1, a2, a3, b3),
-                                 function(LT, a1, b1, a2, a3, b3)
-                                 {LT %>%
-                                     dplyr::mutate(lx=exp((-a1/b1)*(1-exp(-b1*Age))-
-                                                            a2*Age+
-                                                            a3/b3*(1-exp(b3*Age))))})) %>%
-    dplyr::mutate(LT = map(LT, function(x)
+    filter(e0>=e0_min,
+           e0<=e0_max) %>%
+    as_tibble() %>%
+    mutate(LT=list(tibble(Age=0:100))) %>%
+    mutate(LT=pmap(list(LT, a1, b1, a2, a3, b3),
+                   function(LT, a1, b1, a2, a3, b3)
+                   {LT %>%
+                       mutate(lx=exp((-a1/b1)*(1-exp(-b1*Age))-
+                                       a2*Age+
+                                       a3/b3*(1-exp(b3*Age))))})) %>%
+    mutate(LT = map(LT, function(x)
     {x = x %>%
-      dplyr::mutate(ax = c(0.3, rep(0.4, 4), rep(0.5, 96)),
-                    lx_stac = lx,
-                    dx_stac = c(lx_stac[1:100] - lx_stac[2:101], 0),
-                    qx_stac = c(dx_stac[1:100] / lx_stac[1:100], 1),
-                    Lx_stac = c(lx_stac[2:101]+ax[1:100]*(lx_stac[1:100]-lx_stac[2:101]), 0),
-                    ex_stac = rev(cumsum(rev(Lx_stac)))/lx_stac)}))
+      mutate(ax = c(0.3, rep(0.4, 4), rep(0.5, 96)),
+             lx_stac = lx,
+             dx_stac = c(lx_stac[1:100] - lx_stac[2:101], 0),
+             qx_stac = c(dx_stac[1:100] / lx_stac[1:100], 1),
+             Lx_stac = c(lx_stac[2:101]+ax[1:100]*(lx_stac[1:100]-lx_stac[2:101]), 0),
+             ex_stac = rev(cumsum(rev(Lx_stac)))/lx_stac)}))
 
   # Data frame with results
   iter = 0
@@ -116,7 +116,7 @@ simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
   while (iter < n) {
 
     # Sample population growth
-    growth_iter <- stats::runif(1, growth_min, growth_max)
+    growth_iter <- runif(1, growth_min, growth_max)
 
     # Life table of simulated stable population
     LT <- within(LTs$LT[[sample(1:nrow(LTs), 1)]], {
@@ -182,22 +182,22 @@ simdr_CD <- function(sss=T, samples = 100, D20_raw = 50,
   } #End While (iter < n)
   sim_summary <-
     sim_summary %>%
-    dplyr::mutate(SSS:=sss,
-                  Samples := !!samples,
-                  e0_min := !!e0_min,
-                  e0_max := !!e0_max,
-                  Growth_min := !!growth_min*100,
-                  Growth_max := !!growth_max*100) %>%
-    dplyr::mutate(D20_raw = dplyr::case_when(SSS==TRUE ~ !!D20_raw)) %>%
-    dplyr::mutate(D0_14 = ifelse(SSS==T, n-D15_, 1-D15_),
-                  D5_14=D5_-D15_,
-                  D5_19=D5_-D20_,
-                  D1_D20_=D1_/D20_,
-                  D3_D20_=D3_/D20_,
-                  D5_D20_=D5_/D20_,
-                  JI=D5_14/D20_,
-                  P=D5_19/D5_,
-                  D0_14_D0_ = ifelse(SSS==T, D0_14/n, D0_14))
+    mutate(SSS:=sss,
+           Samples := !!samples,
+           e0_min := !!e0_min,
+           e0_max := !!e0_max,
+           Growth_min := !!growth_min*100,
+           Growth_max := !!growth_max*100) %>%
+    mutate(D20_raw = dplyr::case_when(SSS==TRUE ~ !!D20_raw)) %>%
+    mutate(D0_14 = ifelse(SSS==T, n-D15_, 1-D15_),
+           D5_14=D5_-D15_,
+           D5_19=D5_-D20_,
+           D1_D20_=D1_/D20_,
+           D3_D20_=D3_/D20_,
+           D5_D20_=D5_/D20_,
+           JI=D5_14/D20_,
+           P=D5_19/D5_,
+           D0_14_D0_ = ifelse(SSS==T, D0_14/n, D0_14))
 
   # Summary of simulations
   return(sim_summary)

@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "galetap@gmail.com",
            comment = c(ORCID = "0000-0002-4937-1369"))
-Description: Package allows to predict growth rate, crude birth rate and total fertility rate for skeletal samples using age-at-death ratios computer from number of skeletons in two age-at-death categories. Prediction is based on regression model that is derived from a unique set of reference skeletal samples of the same size as the cemetery sample under study. 
+Description: The package enables the prediction of growth rate, crude birth rate, and total fertility rate for skeletal samples by using age-at-death ratios computed from the number of skeletons in two age-at-death categories. The prediction is based on a regression model derived from a unique set of reference skeletal samples of the same size as the cemetery sample under study. 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

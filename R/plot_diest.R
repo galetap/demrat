@@ -68,51 +68,51 @@ plot_diest <- function(dr_data,
     diest =
       dr_data %>%
       # Prediction
-      demrat::diest(summary = F,
-                    samples={{samples}},
-                    e0_min = {{e0_min}}, e0_max = {{e0_max}},
-                    growth_min = {{growth_min}}, growth_max = {{growth_max}},
-                    ...) %>%
+      diest(summary = F,
+            samples={{samples}},
+            e0_min = {{e0_min}}, e0_max = {{e0_max}},
+            growth_min = {{growth_min}}, growth_max = {{growth_max}},
+            ...) %>%
       # Restrict results for selected DV (demogr. var.) and IV (ratio) only
-      tidyr::unnest(c(DIest)) %>%
-      dplyr::filter(DV=={{DV}}) %>%
-      dplyr::filter(IV=={{IV}})
+      unnest(c(DIest)) %>%
+      filter(DV=={{DV}}) %>%
+      filter(IV=={{IV}})
 
     # Data for Site / number of skeletons in age-at-death groups, ratios, etc.
     dr_data =
       diest$dr_data[[1]] %>%
       {if("D5_19_D5_" %in% colnames(.))
-        dplyr::rename(., P="D5_19_D5_")
+        rename(., P="D5_19_D5_")
         else
           .}
 
     # Reference set of simulated skeletal samples
     Ref =
       diest$Ref[[1]] %>%
-      tidyr::as_tibble() %>%
-      dplyr::select(., {{IV}}, {{DV}}) %>%
-      dplyr::rename(x=1, y=2)
+      as_tibble() %>%
+      select(., {{IV}}, {{DV}}) %>%
+      rename(x=1, y=2)
 
     # The name of the Site
     Site = diest[1, "Site"] %>% dplyr::pull()
     # Predicted value of DV
     Est =
       diest[1, "Est"] %>%
-      dplyr::pull()
+      pull()
     # Number of simulated reference skeletal samples
     Samples =
       diest$Ref[[1]] %>%
-      dplyr::slice(1) %>%
-      dplyr::select(Samples) %>%
-      dplyr::pull()
+      slice(1) %>%
+      select(Samples) %>%
+      pull()
     # Ratio value at the Site
     Ratio =
       dr_data[1, IV] %>%
-      dplyr::pull()
+      pull()
     # 97.5th percentile of the ratio in the simulated skeletal samples
     Ratio_lim =
       diest[1, "Ratio_lim"] %>%
-      dplyr::pull()
+      pull()
     # Number of skeletons at the Site
     n = ifelse(c("n") %in% colnames(dr_data), dr_data[1, "n"] %>% dplyr::pull(),
                "Unknown number of")
@@ -124,53 +124,53 @@ plot_diest <- function(dr_data,
                     ifelse(IV=="D3_D20_", "D3+/D20+", "D1+/D20+"))
 
     # Plot
-    ggplot2::ggplot(Ref, ggplot2::aes(x = x, y = y)) +
+    ggplot(Ref, aes(x = x, y = y)) +
       # Reference vertical line at the Site Ratio value
-      ggplot2::geom_vline(xintercept = Ratio, linetype = 2, col = "#800000") +
-      ggplot2::geom_segment(ggplot2::aes(x=Ratio, xend=Ratio, y=Est, yend=Inf), col = "white") +
+      geom_vline(xintercept = Ratio, linetype = 2, col = "#800000") +
+      geom_segment(aes(x=Ratio, xend=Ratio, y=Est, yend=Inf), col = "white") +
       # Reference horizontal line at the predicted value
-      ggplot2::geom_hline(yintercept = Est, linetype = 2, col = "#800000") +
-      ggplot2::geom_segment(ggplot2::aes(x=Ratio, xend=Inf, y=Est, yend=Est), col = "white") +
+      geom_hline(yintercept = Est, linetype = 2, col = "#800000") +
+      geom_segment(aes(x=Ratio, xend=Inf, y=Est, yend=Est), col = "white") +
       # Simulated reference skeletal samples
-      ggplot2::geom_point(shape = 21, alpha=0.7, size=2) +
+      geom_point(shape = 21, alpha=0.7, size=2) +
       # Regression line used for the prediction
-      ggplot2::geom_smooth(method = "gam", col = "black",
-                           se = F, alpha = 0.1, linewidth=0.7) +
+      geom_smooth(method = "gam", col = "black",
+                  se = F, alpha = 0.1, linewidth=0.7) +
       # Plot title, subtitle, x and y
-      ggplot2::labs(title = paste0("Regression model for predicting ", DV, " from the ", IV_lab, " ratio"),
-                    subtitle = paste0("Site: ", Site, "; ", n, " total skeletons", "; ", dr_data$D20_, " adult skeletons"),
-                    x=IV_lab,
-                    y = paste0(DV, " (", Units, ")")) +
+      labs(title = paste0("Regression model for predicting ", DV, " from the ", IV_lab, " ratio"),
+           subtitle = paste0("Site: ", Site, "; ", n, " total skeletons", "; ", dr_data$D20_, " adult skeletons"),
+           x=IV_lab,
+           y = paste0(DV, " (", Units, ")")) +
       # Plot caption (depends on whether Ratio is higher than Ratio limit)
       {if(Ratio>=Ratio_lim)
-        ggplot2::labs(caption = paste0("Points represent the reference set of ", Samples, " simulated skeletal samples.\n",
-                                       "The ratio at the site is outside the limits of the reference set.\n",
-                                       "Prediction may be not reliable."))
+        labs(caption = paste0("Points represent the reference set of ", Samples, " simulated skeletal samples.\n",
+                              "The ratio at the site is outside the limits of the reference set.\n",
+                              "Prediction may be not reliable."))
         else
-          ggplot2::labs(caption = paste("Points represent the reference set of", Samples, "simulated skeletal samples."))
+          labs(caption = paste("Points represent the reference set of", Samples, "simulated skeletal samples."))
       } +
       # If DV is Growth or CBR (is not TFR), then X axis is log-transformed
       {if(DV=="TFR")
-        ggplot2::scale_x_continuous(breaks = seq(1, 3.0, 0.2))
+        scale_x_continuous(breaks = seq(1, 3.0, 0.2))
         else
-          ggplot2::scale_x_continuous(trans = scales::log_trans(), breaks = seq(1, 3.0, 0.2))
+          scale_x_continuous(trans = log_trans(), breaks = seq(1, 3.0, 0.2))
       } +
       # If DV is TFR, then Y axis is log-transformed
       {if(DV=="TFR")
-        ggplot2::scale_y_continuous(trans = scales::log_trans(), breaks = c(0, 2, 3, 4, 5, 6, 8, 10, 12))
+        scale_y_continuous(trans = log_trans(), breaks = c(0, 2, 3, 4, 5, 6, 8, 10, 12))
       } +
       # Site information
-      ggplot2::geom_text(ggplot2::aes(x = Ratio*1.01, y = min(Ref[,"y"]),
-                                      label = paste0(Site,"\n", IV_lab, " = ",
-                                                     scales::number_format(0.01)(Ratio),
-                                                     "\n", DV, " = ",
-                                                     scales::number_format(0.1)(Est),
-                                                     ifelse(Units=="%",""," "), Units)),
-                         hjust = 0, vjust = -0.1, size = 5/14*base_size, col = "#800000") +
-      ggplot2::theme_classic() +
-      ggplot2::theme(axis.title = ggplot2::element_text(size = base_size),
-                     plot.title = ggplot2::element_text(size = base_size+1, face = "bold", hjust = 0),
-                     plot.subtitle = ggplot2::element_text(size = base_size, hjust = 0),
-                     plot.caption = ggplot2::element_text(size = base_size-1, hjust = 1))
+      geom_text(aes(x = Ratio*1.01, y = min(Ref[,"y"]),
+                    label = paste0(Site,"\n", IV_lab, " = ",
+                                   number_format(0.01)(Ratio),
+                                   "\n", DV, " = ",
+                                   number_format(0.1)(Est),
+                                   ifelse(Units=="%",""," "), Units)),
+                hjust = 0, vjust = -0.1, size = 5/14*base_size, col = "#800000") +
+      theme_classic() +
+      theme(axis.title = element_text(size = base_size),
+            plot.title = element_text(size = base_size+1, face = "bold", hjust = 0),
+            plot.subtitle = element_text(size = base_size, hjust = 0),
+            plot.caption = element_text(size = base_size-1, hjust = 1))
   }
 }
