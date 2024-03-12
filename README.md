@@ -18,6 +18,11 @@ The Shiny app is useful for non-R users or for those who want to
 experiment with the `demrat` package before downloading it and without
 having to read through the documentation below.
 
+Note, that the shiny application is currently hosted on the shinyapps.io
+public server. The access to the server is limited to 25 active hours
+per month and application may be temporarily inaccessible if the limit
+is exceeded.
+
 ## Installation and loading the demrat package
 
 - Install the latest developmental version from
