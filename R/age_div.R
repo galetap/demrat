@@ -1,7 +1,7 @@
 #' Divides an individual into parts
 #'
 #' Proportionally splits an individual into 100 age-at-death categories (0-99 years)
-#' on the basis of the estimation of its age-at-death.
+#' on the basis of the age-at-death estimation.
 #' @param data A data frame with individuals' age-at-death estimations.
 #' Data frame must contain at least two columns:
 #' \code{Age_min}, lower limit of age-at-death interval, must be a numeric variable;
